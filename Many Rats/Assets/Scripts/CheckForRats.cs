@@ -6,10 +6,6 @@ public class CheckForRats : MonoBehaviour
 {
     private List<GameObject> otherRats;
 
-    private void Start()
-    {
-        otherRats = new List<GameObject>();
-    }
     public List<GameObject> ReturnRats()
     {
         return otherRats;

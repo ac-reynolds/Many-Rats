@@ -9,39 +9,11 @@ public class RatBehaviour : MonoBehaviour
 
     private const int MAX_DEGREES = 360;
     private Quaternion _displacement;
-
-    [SerializeField] private float ratCheckRadius;
-    [SerializeField] private CircleCollider2D ratCheckerCollider;
-    [SerializeField] private GameObject ratCheckerObject;
-    private CheckForRats checkForRats;
-    private List<GameObject> nearbyRats;
-    [SerializeField] private int ratHordeCriticalMass;
-
-    [SerializeField] private GameObject ratHordePrefab;
-
     void Start()
     {
         _displacement = Quaternion.AngleAxis(Random.Range(0, MAX_DEGREES), Vector3.forward);
+    }
 
-        ratCheckerCollider.radius = ratCheckRadius;
-        checkForRats = ratCheckerObject.GetComponent<CheckForRats>();
-    }
-    private void Update()
-    {
-        nearbyRats = checkForRats.ReturnRats();
-        if (nearbyRats != null)
-        {
-            if (nearbyRats.Count > ratHordeCriticalMass)
-            {
-                foreach(GameObject rat in nearbyRats)
-                {
-                    rat.SetActive(false);
-                    Instantiate(ratHordePrefab, transform.position, Quaternion.identity);
-                    this.gameObject.SetActive(false);
-                }
-            }
-        }
-    }
     void FixedUpdate()
     {
         //rotate in a random direction

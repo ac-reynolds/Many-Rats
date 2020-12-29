@@ -11,7 +11,7 @@ public class CheckForRats : MonoBehaviour
         return otherRats;
     }
 
-    private void OnTriggerEnter2D(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Rat"))
         {
@@ -19,7 +19,7 @@ public class CheckForRats : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit2D(Collider other)
+    private void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Rat"))
         {

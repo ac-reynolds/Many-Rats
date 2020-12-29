@@ -10,6 +10,7 @@ public class RatBehaviour : MonoBehaviour
     private const int MAX_DEGREES = 360;
     private Quaternion _displacement;
 
+<<<<<<< Updated upstream
     [SerializeField] private float ratCheckRadius;
     [SerializeField] private CircleCollider2D ratCheckerCollider;
     [SerializeField] private GameObject ratCheckerObject;
@@ -18,6 +19,9 @@ public class RatBehaviour : MonoBehaviour
     [SerializeField] private int ratHordeCriticalMass;
 
     [SerializeField] private GameObject ratHordePrefab;
+=======
+
+>>>>>>> Stashed changes
 
     void Start()
     {

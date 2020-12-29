@@ -6,10 +6,13 @@ public class PersonFinder : MonoBehaviour
 {
     private List<GameObject> peopleFound;
 
+<<<<<<< Updated upstream
     private void Start()
     {
         peopleFound = new List<GameObject>();
     }
+=======
+>>>>>>> Stashed changes
     public List<GameObject> ReturnPeople()
     {
         return peopleFound;

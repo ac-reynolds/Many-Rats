@@ -20,13 +20,18 @@ public class PersonBehaviour : MonoBehaviour
 
     void Start()
     {
-        ratCheckerCollider.radius = ratCheckRadius;
-        checkForRats = ratCheckerObject.GetComponent<CheckForRats>();
+        //ratCheckerCollider.radius = ratCheckRadius;
+        //checkForRats = ratCheckerObject.GetComponent<CheckForRats>();
         movementDirection = transform.position;
+    }
+
+    public void OnCharm(WalkableNode location) {
+        Debug.Log("accepted");
     }
 
     void Update()
     {
+        return;
         // check for nearby rats
         nearbyRats = checkForRats.ReturnRats();
         if (nearbyRats.Count > 0)

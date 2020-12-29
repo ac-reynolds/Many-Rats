@@ -29,17 +29,19 @@ public class PersonBehaviour : MonoBehaviour
     void Update()
     {
         nearbyRats = checkForRats.ReturnRats();
-        if (nearbyRats.Count > 0)
+        if (nearbyRats == null)
         {
-            CalculateAverageRatVector();
-            // movementDirection = -averageRatVector;
-            movementSpeed = runningSpeed;
+            //Debug.Log("moving");
+            witchObject = GameObject.FindGameObjectWithTag("Witch");
+            movementDirection = witchObject.transform.position;
+            movementSpeed = walkingSpeed;
         }
         else
         {
-            witchObject = GameObject.FindGameObjectWithTag("Witch");
-            movementDirection = witchObject.transform.position - this.transform.position;
-            movementSpeed = walkingSpeed;
+            //Debug.Log("running");
+            CalculateAverageRatVector();
+            // movementDirection = -averageRatVector;
+            movementSpeed = runningSpeed;
         }
     }
 
@@ -58,12 +60,12 @@ public class PersonBehaviour : MonoBehaviour
     {
         if(other.CompareTag("RatHorde") || other.CompareTag("Witch"))
         {
-            Destroy(this);
+            
         }
         if(other.CompareTag("Carriage"))
         {
             personDelivered.Invoke();
-            Destroy(this);
+            this.gameObject.SetActive(false);
         }
     }
 }

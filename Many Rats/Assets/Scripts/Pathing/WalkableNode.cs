@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections;
+using UnityEditor;
 using System.Collections.Generic;
 using UnityEngine;
 
 /*
  * Node class for specifying walkable graphs.  
  */
+[Serializable]
 public class WalkableNode : MonoBehaviour
 {
     public List<WalkableNode> neighbors;
@@ -16,6 +18,9 @@ public class WalkableNode : MonoBehaviour
         foreach (WalkableNode n in neighbors) {
             Gizmos.DrawLine(transform.position, n.transform.position);
         }
+        GUIStyle style = new GUIStyle();
+        style.fontSize = 20;
+        Handles.Label(transform.position, name, style);
     }
 
     void Awake () {
@@ -102,7 +107,7 @@ public class WalkableNode : MonoBehaviour
             //Debug.Log("-------------------");
             //Debug.Log("visiting " + nextNode.name + " at distance " + nextNodeDistance);
             //PrintD1(visited);
-            //PrintD2(prospective);
+            //  PrintD2(prospective);
 
             //otherwise, add our node to visited with distance information and purge it from prospective nodes
             visited.Add(nextNode, new Tuple<float, WalkableNode>(nextNodeDistance, prospective[nextNode]));

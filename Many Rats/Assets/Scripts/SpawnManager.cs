@@ -11,6 +11,11 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private float personSpawnTime;
     [SerializeField] private float witchSpawnTime;
     [SerializeField] private float carriageSpawnTime;
+
+    public GameObject WitchSpawnsParentObject;
+    public GameObject PersonSpawnsParentObject;
+    private WalkableNode[] _witchSpawns;
+    private List<Transform> _personSpawns;
     private float personSpawnTimer;
     private float witchSpawnTimer;
     private float carriageSpawnTimer;
@@ -19,22 +24,22 @@ public class SpawnManager : MonoBehaviour
 
     void Start()
     {
-        return;
+        _witchSpawns = WitchSpawnsParentObject.GetComponentsInChildren<WalkableNode>();
+        _personSpawns = new List<Transform>();
+        foreach (Transform child in PersonSpawnsParentObject.transform) {
+            _personSpawns.Add(child);
+        }
+        Debug.Log("count is " + _personSpawns.Count);
         // initially spawn 3 people, 1 carriage, 1 witch
         // mark spawn times
         personSpawnTimer = Time.time;
         witchSpawnTimer = Time.time;
         carriageSpawnTimer = Time.time;
-        Instantiate(carriagePrefab, GetNewSpawnCoords(), Quaternion.identity);
-        Instantiate(witchPrefab, GetNewSpawnCoords(), Quaternion.identity);
-        Instantiate(personPrefab, GetNewSpawnCoords(), Quaternion.identity);
-        Instantiate(personPrefab, GetNewSpawnCoords(), Quaternion.identity);
-        Instantiate(personPrefab, GetNewSpawnCoords(), Quaternion.identity);
     }
 
     void Update()
     {
-        return;
+        /*
         // after personSpawnTime seconds, spawn 3 new people and mark new spawn time
         if(Time.time - personSpawnTime > personSpawnTimer)
         {
@@ -59,6 +64,19 @@ public class SpawnManager : MonoBehaviour
             Instantiate(carriagePrefab, GetNewSpawnCoords(), Quaternion.identity);
             carriageSpawnTimer = Time.time;
         }
+        */
+    }
+
+    /*
+     * Finds a random walkable node and spawns the witch there.  Updates the witch to have access to the
+     * spawn node. 
+     */
+    private void SpawnWitch() {
+        int minNodeIndex = 0;
+        int maxNodeIndex = _witchSpawns.Length;
+        WalkableNode spawnLocation = _witchSpawns[Random.Range(minNodeIndex, maxNodeIndex)];
+        GameObject witch = Instantiate(witchPrefab, spawnLocation.transform.position, Quaternion.identity);
+        witch.GetComponent<WitchBehaviour>().SetNode(spawnLocation);
     }
 
     /*

@@ -11,7 +11,7 @@ public class PersonBehaviour : MonoBehaviour
     private List<GameObject> nearbyRats;
     private CheckForRats checkForRats;
     private GameObject witchObject;
-    private Vector2 targetOfMovementDirection;
+    private Vector2 movementDirection;
     private float movementSpeed;
     [SerializeField] private float walkingSpeed;
     [SerializeField] private float runningSpeed;
@@ -33,37 +33,34 @@ public class PersonBehaviour : MonoBehaviour
         {
             //Debug.Log("moving");
             witchObject = GameObject.FindGameObjectWithTag("Witch");
-            targetOfMovementDirection = witchObject.transform.position;
+            movementDirection = witchObject.transform.position;
             movementSpeed = walkingSpeed;
         }
         else
         {
-            Debug.Log("running");
-            targetOfMovementDirection = CalculateAverageRatVector(nearbyRats);
+            //Debug.Log("running");
+            CalculateAverageRatVector();
+            // movementDirection = -averageRatVector;
             movementSpeed = runningSpeed;
         }
     }
 
     private void FixedUpdate()
     {
-        transform.position = Vector2.MoveTowards(transform.position, targetOfMovementDirection, walkingSpeed * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(transform.position, movementDirection, walkingSpeed * Time.deltaTime);
     }
 
-    //finds the direction of the sum of rat -> person vectors
-    private Vector3 CalculateAverageRatVector(List<GameObject> ratsRatsRats)
+    void CalculateAverageRatVector()
     {
-        Vector3 sumVector = Vector3.zero;
-        foreach (GameObject rat in ratsRatsRats) {
-            sumVector += transform.position - rat.transform.position;
-        }
-        return sumVector.normalized;
+        // do adam math things here
+        // List of nearby Rat gameObjects is in 'nearbyRats'
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if(other.CompareTag("RatHorde") || other.CompareTag("Witch"))
         {
-            this.gameObject.SetActive(false);
+            
         }
         if(other.CompareTag("Carriage"))
         {

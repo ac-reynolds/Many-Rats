@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 5000079306593227896}
   - component: {fileID: 5000079306593227897}
   - component: {fileID: 5000079306593227898}
+  - component: {fileID: -5863654985974961743}
+  - component: {fileID: 6725226378622007296}
   m_Layer: 0
   m_Name: Cheese
   m_TagString: Cheese
@@ -96,3 +98,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cheeseDespawnTime: 10
+--- !u!58 &-5863654985974961743
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5000079306593227899}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 12
+--- !u!50 &6725226378622007296
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5000079306593227899}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 0.0001
+  m_LinearDrag: 0
+  m_AngularDrag: 0
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

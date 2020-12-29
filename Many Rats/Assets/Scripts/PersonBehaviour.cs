@@ -18,49 +18,66 @@ public class PersonBehaviour : MonoBehaviour
 
     public UnityEvent personDelivered;
 
-    // Start is called before the first frame update
     void Start()
     {
         ratCheckerCollider.radius = ratCheckRadius;
         checkForRats = ratCheckerObject.GetComponent<CheckForRats>();
+        movementDirection = transform.position;
     }
 
-    // Update is called once per frame
     void Update()
     {
+        // check for nearby rats
         nearbyRats = checkForRats.ReturnRats();
-        if (nearbyRats == null)
+        if (nearbyRats.Count > 0)
         {
-            //Debug.Log("moving");
-            witchObject = GameObject.FindGameObjectWithTag("Witch");
-            movementDirection = witchObject.transform.position;
-            movementSpeed = walkingSpeed;
+            // if there are any nearby rats, calculate average rat position and change to running speed
+            //Debug.Log("running");
+            CalculateAverageRatVector();
+            movementDirection = Vector3.Normalize(CalculateAverageRatVector());
+            movementSpeed = runningSpeed;
         }
         else
         {
-            //Debug.Log("running");
-            CalculateAverageRatVector();
-            // movementDirection = -averageRatVector;
-            movementSpeed = runningSpeed;
+            // otherwise find the witch and move directly towards witch and change to wakling speed
+            //Debug.Log("moving");
+            witchObject = GameObject.FindGameObjectWithTag("Witch");
+            if (witchObject != null)
+            {
+                movementDirection = Vector3.Normalize(witchObject.transform.position);
+            }
+            movementSpeed = walkingSpeed;
         }
     }
 
     private void FixedUpdate()
     {
-        transform.position = Vector2.MoveTowards(transform.position, movementDirection, walkingSpeed * Time.deltaTime);
+        // move towards movementDirection
+        transform.position = Vector2.MoveTowards(transform.position, movementDirection, movementSpeed * Time.deltaTime);
     }
 
-    void CalculateAverageRatVector()
+    // calculate avg vector away from all nearby rats
+    private Vector3 CalculateAverageRatVector()
     {
-        // do adam math things here
-        // List of nearby Rat gameObjects is in 'nearbyRats'
+        Vector3 averageRatVector = new Vector3(0, 0, 0);
+        foreach(GameObject rat in nearbyRats)
+        {
+            averageRatVector += transform.position - rat.transform.position;
+        }
+        return averageRatVector;
     }
 
+    // collision cases for different objects
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.CompareTag("RatHorde") || other.CompareTag("Witch"))
+        if(other.CompareTag("RatHorde"))
         {
-            
+            this.gameObject.SetActive(false);
+            other.gameObject.SetActive(false);
+        }
+        if(other.CompareTag("Witch"))
+        {
+            this.gameObject.SetActive(false);
         }
         if(other.CompareTag("Carriage"))
         {

@@ -157,14 +157,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8056c4f77b455a04db4c0652c69269b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ratCheckRadius: 5
+  ratCheckRadius: 50
   ratCheckerCollider: {fileID: 6061668745100052558}
   ratCheckerObject: {fileID: 6061668745100052545}
-  walkingSpeed: 5
-  runningSpeed: 10
+  walkingSpeed: 1
+  runningSpeed: 5
   personDelivered:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: -1317201156768273008, guid: 26580e25710ce774d8c0ed35563714a9, type: 3}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: IncreaseCheese
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: -1317201156768273008, guid: 26580e25710ce774d8c0ed35563714a9, type: 3}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: IncreaseScore
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!58 &6061668746813443928
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -180,4 +204,4 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.1
+  m_Radius: 6

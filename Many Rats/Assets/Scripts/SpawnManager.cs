@@ -17,17 +17,23 @@ public class SpawnManager : MonoBehaviour
     private GameObject witchObject;
     private GameObject carriageObject;
 
-    // Start is called before the first frame update
     void Start()
     {
+        // initially spawn 3 people, 1 carriage, 1 witch
+        // mark spawn times
         personSpawnTimer = Time.time;
         witchSpawnTimer = Time.time;
         carriageSpawnTimer = Time.time;
+        Instantiate(carriagePrefab, GetNewSpawnCoords(), Quaternion.identity);
+        Instantiate(witchPrefab, GetNewSpawnCoords(), Quaternion.identity);
+        Instantiate(personPrefab, GetNewSpawnCoords(), Quaternion.identity);
+        Instantiate(personPrefab, GetNewSpawnCoords(), Quaternion.identity);
+        Instantiate(personPrefab, GetNewSpawnCoords(), Quaternion.identity);
     }
 
-    // Update is called once per frame
     void Update()
     {
+        // after personSpawnTime seconds, spawn 3 new people and mark new spawn time
         if(Time.time - personSpawnTime > personSpawnTimer)
         {
             Instantiate(personPrefab, GetNewSpawnCoords(), Quaternion.identity);
@@ -35,6 +41,7 @@ public class SpawnManager : MonoBehaviour
             Instantiate(personPrefab, GetNewSpawnCoords(), Quaternion.identity);
             personSpawnTimer = Time.time;
         }
+        // after witchSpawnTime seconds, delete old witch, spawn new witch, and mark new spawn time
         if (Time.time - witchSpawnTime > witchSpawnTimer)
         {
             witchObject = GameObject.FindGameObjectWithTag("Witch");
@@ -42,6 +49,7 @@ public class SpawnManager : MonoBehaviour
             Instantiate(witchPrefab, GetNewSpawnCoords(), Quaternion.identity);
             witchSpawnTimer = Time.time;
         }
+        // after carriageSpawnTime seconds, delete old carriage, spawn new carriage, and mark new spawn time
         if (Time.time - carriageSpawnTime > carriageSpawnTimer)
         {
             carriageObject = GameObject.FindGameObjectWithTag("Carriage");

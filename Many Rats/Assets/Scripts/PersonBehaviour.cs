@@ -47,7 +47,11 @@ public class PersonBehaviour : MonoBehaviour
 
     private void FixedUpdate()
     {
+<<<<<<< Updated upstream
         transform.position = Vector2.MoveTowards(transform.position, movementDirection, walkingSpeed);
+=======
+        //transform.position = Vector2.MoveTowards(transform.position, movementDirection, walkingSpeed * Time.deltaTime);
+>>>>>>> Stashed changes
     }
 
     void CalculateAverageRatVector()

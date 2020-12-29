@@ -10,7 +10,9 @@ public class InputHandler : MonoBehaviour
 
     void Update()
     {
+        //if user clicks on game field, a rat will spawn at cursor location
         if (Input.GetKeyDown(KeyCode.Mouse0)) {
+
             Ray cameraRay = Camera.ScreenPointToRay(Input.mousePosition);
             Vector3 cameraRayOrigin = cameraRay.origin;
             Vector3 cameraRayDirection = cameraRay.direction;

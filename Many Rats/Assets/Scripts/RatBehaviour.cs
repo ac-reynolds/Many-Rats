@@ -16,6 +16,7 @@ public class RatBehaviour : MonoBehaviour
 
     void FixedUpdate()
     {
+        //rotate in a random direction
         _displacement *= Quaternion.AngleAxis(Random.Range(-RatRandomness, RatRandomness), Vector3.forward);
         Vector3 dx = _displacement * Vector3.right * Time.deltaTime * RatSpeed;
         Vector3.MoveTowards(transform.position, transform.position + dx, RatSpeed * Time.deltaTime);
@@ -27,6 +28,7 @@ public class RatBehaviour : MonoBehaviour
         transform.localScale = scale;
     }
     private void OnTriggerEnter2D(Collider2D collider) {
+        //avoid other rats
         Vector3 newDirection = transform.position - collider.transform.position;
         _displacement.SetFromToRotation(Vector2.right, newDirection);
     }

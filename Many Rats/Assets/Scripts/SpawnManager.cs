@@ -4,17 +4,16 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
+    [SerializeField] private Camera Camera;
     [SerializeField] private GameObject personPrefab;
     [SerializeField] private GameObject witchPrefab;
     [SerializeField] private GameObject carriagePrefab;
     [SerializeField] private float personSpawnTime;
     [SerializeField] private float witchSpawnTime;
     [SerializeField] private float carriageSpawnTime;
-    [SerializeField] private float spawnRadius;
     private float personSpawnTimer;
     private float witchSpawnTimer;
     private float carriageSpawnTimer;
-    private Vector3 spawnLocation;
     private GameObject witchObject;
     private GameObject carriageObject;
 
@@ -52,9 +51,17 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
+    /*
+     * Returns a random point on the playing field in view of the camera.  Evenly distributed over x and y axes.  
+     */
     private Vector3 GetNewSpawnCoords()
     {
-        spawnLocation = Random.insideUnitCircle * spawnRadius;
-        return spawnLocation;
+        float randomScreenx = Random.Range(0, Camera.pixelWidth);
+        float randomScreeny = Random.Range(0, Camera.pixelHeight);
+        Vector3 randomScreenSpawn = new Vector3(randomScreenx, randomScreeny, 0);
+        Ray cameraRay = Camera.ScreenPointToRay(randomScreenSpawn);
+        Vector3 cameraRayOrigin = cameraRay.origin;
+        Vector3 cameraRayDirection = cameraRay.direction;
+        return cameraRayOrigin - cameraRayOrigin.z / cameraRayDirection.z * cameraRayDirection;
     }
 }

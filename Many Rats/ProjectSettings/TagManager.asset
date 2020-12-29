@@ -9,6 +9,7 @@ TagManager:
   - RatHorde
   - Witch
   - Carriage
+  - Cheese
   layers:
   - Default
   - TransparentFX

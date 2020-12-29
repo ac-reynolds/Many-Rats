@@ -10,6 +10,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private float personSpawnTime;
     [SerializeField] private float witchSpawnTime;
     [SerializeField] private float carriageSpawnTime;
+    [SerializeField] private float spawnRadius;
     private float personSpawnTimer;
     private float witchSpawnTimer;
     private float carriageSpawnTimer;
@@ -31,6 +32,8 @@ public class SpawnManager : MonoBehaviour
         if(Time.time - personSpawnTime > personSpawnTimer)
         {
             Instantiate(personPrefab, GetNewSpawnCoords(), Quaternion.identity);
+            Instantiate(personPrefab, GetNewSpawnCoords(), Quaternion.identity);
+            Instantiate(personPrefab, GetNewSpawnCoords(), Quaternion.identity);
             personSpawnTimer = Time.time;
         }
         if (Time.time - witchSpawnTime > witchSpawnTimer)
@@ -51,7 +54,7 @@ public class SpawnManager : MonoBehaviour
 
     private Vector3 GetNewSpawnCoords()
     {
-        spawnLocation = Random.insideUnitCircle * 20;
+        spawnLocation = Random.insideUnitCircle * spawnRadius;
         return spawnLocation;
     }
 }

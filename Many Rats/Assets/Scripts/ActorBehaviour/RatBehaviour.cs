@@ -8,7 +8,7 @@ public class RatBehaviour : MonoBehaviour
     public float RatSpeed = 1;
 
     private const int MAX_DEGREES = 360;
-    private Quaternion _displacement;
+    private Quaternion _direction;
 
     // rat horde stuff
     [SerializeField] private float ratCheckRadius;
@@ -28,8 +28,9 @@ public class RatBehaviour : MonoBehaviour
 
     void Start()
     {
-        _displacement = Quaternion.AngleAxis(Random.Range(0, MAX_DEGREES), Vector3.forward);
+        _direction = Quaternion.AngleAxis(Random.Range(0, MAX_DEGREES), Vector3.forward);
 
+        /*
         // find rat checker
         ratCheckerCollider.radius = ratCheckRadius;
         checkForRats = ratCheckerObject.GetComponent<CheckForRats>();
@@ -39,9 +40,20 @@ public class RatBehaviour : MonoBehaviour
         cheeseFinder = cheeseFinderObject.GetComponent<CheeseFinder>();
 
         nearbyCheese = false;
+        */
     }
     private void Update()
     {
+
+
+        // check if cheese has been found
+        //nearbyCheese = cheeseFinder.ReturnCheeseFound();
+        //if (nearbyCheese == true) {
+            // move directly towards cheese if there is cheese detected
+            //_direction = cheeseFinder.ReturnCheeseCoordinates() - transform.position;
+        //}
+
+        return;
         // check # of nearby rats
         nearbyRats = checkForRats.ReturnRats();
         if (nearbyRats != null)
@@ -52,46 +64,30 @@ public class RatBehaviour : MonoBehaviour
                 for(int i = 0; i < nearbyRats.Count; i++)
                 {
                     // set other rats inactive
-                    nearbyRats[i].SetActive(false);
+                    //nearbyRats[i].SetActive(false);
                 }
                 // instantiate the horde, then set this rat as inactive
-                Instantiate(ratHordePrefab, transform.position, Quaternion.identity);
-                this.gameObject.SetActive(false);
+                //Instantiate(ratHordePrefab, transform.position, Quaternion.identity);
+                //this.gameObject.SetActive(false);
             }
         }
-        
-
     }
     void FixedUpdate()
     {
-        // check if cheese has been found
-        nearbyCheese = cheeseFinder.ReturnCheeseFound();
-        if (nearbyCheese == true)
-        {
-            // move directly towards cheese if there is cheese detected
-            transform.position = Vector2.MoveTowards(transform.position, cheeseFinder.ReturnCheeseCoordinates(), RatSpeed * Time.deltaTime);
-        }
-        else
-        {
-            //rotate in a random direction
-            _displacement *= Quaternion.AngleAxis(Random.Range(-RatRandomness, RatRandomness), Vector3.forward);
-            Vector3 dx = _displacement * Vector3.right * Time.deltaTime * RatSpeed;
-            Vector3.MoveTowards(transform.position, transform.position + dx, RatSpeed * Time.deltaTime);
-            transform.position = transform.position + dx;
+        //randomize direction slightly
+        _direction *= Quaternion.AngleAxis(Random.Range(-RatRandomness, RatRandomness), Vector3.forward);
+        
+        //move rat
+        Vector3 directionVector = _direction * Vector3.right;
+        transform.position = Vector2.MoveTowards(transform.position, transform.position + directionVector, RatSpeed * Time.deltaTime);
 
-            //flip orientation based on motion
-            Vector3 scale = transform.localScale;
-            scale.x = dx.x > 0 ? 1 : -1;
-            transform.localScale = scale;
-        }
+        //flip orientation based on motion
+        Vector3 scale = transform.localScale;
+        scale.x = directionVector.x > 0 ? 1 : -1;
+        transform.localScale = scale;
     }
-    private void OnTriggerEnter2D(Collider2D collider)
-    {
-        //avoid other rats
-        if (collider.CompareTag("Rat"))
-        {
-            Vector3 newDirection = transform.position - collider.transform.position;
-            _displacement.SetFromToRotation(Vector2.right, newDirection);
-        }
+
+    private void OnCollisionEnter2D(Collision2D collision) {
+        _direction.SetFromToRotation(Vector3.right, transform.position - (Vector3)collision.GetContact(0).point);
     }
 }

@@ -54,7 +54,7 @@ public class PersonBehaviour : MonoBehaviour
         // List of nearby Rat gameObjects is in 'nearbyRats'
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider other)
     {
         if(other.CompareTag("RatHorde") || other.CompareTag("Witch"))
         {

@@ -19,6 +19,7 @@ public class SpawnManager : MonoBehaviour
 
     void Start()
     {
+        return;
         // initially spawn 3 people, 1 carriage, 1 witch
         // mark spawn times
         personSpawnTimer = Time.time;
@@ -33,6 +34,7 @@ public class SpawnManager : MonoBehaviour
 
     void Update()
     {
+        return;
         // after personSpawnTime seconds, spawn 3 new people and mark new spawn time
         if(Time.time - personSpawnTime > personSpawnTimer)
         {

@@ -2,15 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Collider2D))]
 public class CheckForRats : MonoBehaviour
 {
     private List<GameObject> otherRats;
 
-    private void Start()
-    {
-        otherRats = new List<GameObject>();
-    }
     public List<GameObject> ReturnRats()
     {
         return otherRats;
@@ -20,7 +15,6 @@ public class CheckForRats : MonoBehaviour
     {
         if (other.CompareTag("Rat"))
         {
-            //Debug.Log("adding rat");
             otherRats.Add(other.gameObject);
         }
     }

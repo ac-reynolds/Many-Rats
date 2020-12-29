@@ -9,7 +9,6 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private GameObject witchPrefab;
     [SerializeField] private GameObject carriagePrefab;
     [SerializeField] private float personSpawnTime;
-    [SerializeField] private int personsSpawnedPerWave = 3;
     [SerializeField] private float witchSpawnTime;
     [SerializeField] private float carriageSpawnTime;
     private float personSpawnTimer;
@@ -31,37 +30,25 @@ public class SpawnManager : MonoBehaviour
     {
         if(Time.time - personSpawnTime > personSpawnTimer)
         {
-            SpawnPeople(personsSpawnedPerWave);
+            Instantiate(personPrefab, GetNewSpawnCoords(), Quaternion.identity);
+            Instantiate(personPrefab, GetNewSpawnCoords(), Quaternion.identity);
+            Instantiate(personPrefab, GetNewSpawnCoords(), Quaternion.identity);
             personSpawnTimer = Time.time;
         }
         if (Time.time - witchSpawnTime > witchSpawnTimer)
         {
-            SpawnWitch();
+            witchObject = GameObject.FindGameObjectWithTag("Witch");
+            Destroy(witchObject);
+            Instantiate(witchPrefab, GetNewSpawnCoords(), Quaternion.identity);
             witchSpawnTimer = Time.time;
         }
         if (Time.time - carriageSpawnTime > carriageSpawnTimer)
         {
-            SpawnCarriage();
+            carriageObject = GameObject.FindGameObjectWithTag("Carriage");
+            Destroy(carriageObject);
+            Instantiate(carriagePrefab, GetNewSpawnCoords(), Quaternion.identity);
             carriageSpawnTimer = Time.time;
         }
-    }
-
-    private void SpawnPeople(int n) {
-        for (int i = 0; i < n; i++) {
-            Instantiate(personPrefab, GetNewSpawnCoords(), Quaternion.identity);
-        }
-    }
-
-    private void SpawnWitch() {
-        witchObject = GameObject.FindGameObjectWithTag("Witch");
-        Destroy(witchObject);
-        Instantiate(witchPrefab, GetNewSpawnCoords(), Quaternion.identity);
-    }
-
-    private void SpawnCarriage() {
-        carriageObject = GameObject.FindGameObjectWithTag("Carriage");
-        Destroy(carriageObject);
-        Instantiate(carriagePrefab, GetNewSpawnCoords(), Quaternion.identity);
     }
 
     /*
@@ -75,11 +62,6 @@ public class SpawnManager : MonoBehaviour
         Ray cameraRay = Camera.ScreenPointToRay(randomScreenSpawn);
         Vector3 cameraRayOrigin = cameraRay.origin;
         Vector3 cameraRayDirection = cameraRay.direction;
-        Vector3 prospectivePosition = cameraRayOrigin - cameraRayOrigin.z / cameraRayDirection.z * cameraRayDirection;
-
-        //TODO don't spawn inside collider
-        //Debug.Log(GetComponentsInChildren<Collider>().Length);
-
-        return prospectivePosition;
+        return cameraRayOrigin - cameraRayOrigin.z / cameraRayDirection.z * cameraRayDirection;
     }
 }

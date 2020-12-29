@@ -10,24 +10,20 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Text cheeseText;
     [SerializeField] private Text scoreText;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
+    // updates HUD text with score and cheese available for right click
     void Update()
     {
         cheeseText.text = cheeseAvailable + " Cheese";
         scoreText.text = "Score:" + score;
     }
 
+    // increases score by 1, called during PersonBehavior event PersonDelivered
     public void IncreaseScore()
     {
         score++;
     }
 
+    // increases cheese by 1, called during PersonBehavior event PersonDelivered
     public void IncreaseCheese()
     {
         cheeseAvailable++;

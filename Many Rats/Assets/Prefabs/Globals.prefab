@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5828128933618875747}
   - component: {fileID: 5828128933618875744}
+  - component: {fileID: -1317201156768273008}
   m_Layer: 0
   m_Name: Globals
   m_TagString: Untagged
@@ -44,4 +45,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RatPrefab: {fileID: 2160825059472800747, guid: 2664ddc0ce48aae43ba6ca0e65334a42, type: 3}
+  CheesePrefab: {fileID: 0}
   Camera: {fileID: 0}
+--- !u!114 &-1317201156768273008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5828128933618875746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd2cd685943a9754a97f71cc2380d1a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cheeseText: {fileID: 0}
+  scoreText: {fileID: 0}

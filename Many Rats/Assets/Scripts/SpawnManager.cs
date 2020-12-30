@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    [SerializeField] private Camera Camera;
-    [SerializeField] private GameObject personPrefab;
-    [SerializeField] private GameObject witchPrefab;
     [SerializeField] private GameObject carriagePrefab;
+    [SerializeField] private GameObject personPrefab;
+    [SerializeField] private GameObject ratPrefab;
+    [SerializeField] private GameObject witchPrefab;
     [SerializeField] private float witchSpawnTime;
     [SerializeField] private float carriageSpawnTime;
 
@@ -34,6 +34,7 @@ public class SpawnManager : MonoBehaviour
         }
         _nextPersonSpawnTime = Random.Range(0.0f, MaxPersonSpawnTime);
         _nextWitchSpawnTime = WitchSpawn;
+        EventManager.GetInstance().RegisterRatSpawnEvent(SpawnRat);
     }
 
     void Update()
@@ -47,6 +48,24 @@ public class SpawnManager : MonoBehaviour
             SpawnWitch();
             _nextWitchSpawnTime += WitchSpawn;
         }
+    }
+
+
+    /*
+     * Finds a random person spawn location and spawns a player there.
+     */
+    private void SpawnPerson() {
+        int minNodeIndex = 0;
+        int maxNodeIndex = _personSpawns.Count;
+        Transform spawnLocation = _personSpawns[Random.Range(minNodeIndex, maxNodeIndex)];
+        Instantiate(personPrefab, spawnLocation.position, Quaternion.identity, GameObject.Find("Actors/Persons").transform);
+    }
+
+    /*
+     * Spanws a rat at the specified point.
+     */
+    private void SpawnRat(Vector2 boardPosition) {
+        Instantiate(ratPrefab, boardPosition, Quaternion.identity, GameObject.Find("Actors/Rats").transform);
     }
 
     /*
@@ -67,13 +86,4 @@ public class SpawnManager : MonoBehaviour
         witch.GetComponent<WitchBehaviour>().SetNode(spawnLocation);
     }
 
-    /*
-     * Finds a random person spawn location and spawns a player there.
-     */
-    private void SpawnPerson() {
-        int minNodeIndex = 0;
-        int maxNodeIndex = _personSpawns.Count;
-        Transform spawnLocation = _personSpawns[Random.Range(minNodeIndex, maxNodeIndex)];
-        Instantiate(personPrefab, spawnLocation.position, Quaternion.identity, GameObject.Find("Actors/Persons").transform);
-    }
 }

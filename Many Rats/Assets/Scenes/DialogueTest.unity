@@ -354,7 +354,7 @@ MonoBehaviour:
   dialogue2SpeakerImage: {fileID: 707337223}
   tutorialPromptGroup: {fileID: 908768259}
   tutorialPromptText: {fileID: 2067564747}
-  ratgusherChatSprite: {fileID: 21300000, guid: 93ae1e18fd5f32d48beeafb880c08770, type: 3}
+  ratgusherChatSprite: {fileID: 21300000, guid: 3d29ecddc8a8ca247a0c51e40a1deefa, type: 3}
   witchChatSprite: {fileID: 21300000, guid: 9917769e36323f544aede24f3bc5ded0, type: 3}
   mayorChatSprite: {fileID: 21300000, guid: e37cbb8767570ec48b3c59304b5c1d6c, type: 3}
 --- !u!4 &321171760

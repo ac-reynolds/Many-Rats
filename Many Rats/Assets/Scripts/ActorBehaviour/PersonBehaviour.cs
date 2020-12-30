@@ -21,7 +21,8 @@ public class PersonBehaviour : MonoBehaviour
 
     public float WaypointTagDistance = .5f;
 
-    private GameObject[] _allNodes;
+
+    private GameObject[] _allNodes;//for finding nearest node
     private bool _isCharmed = false;
     private WalkableNode _charmSource;
     private List<WalkableNode> _pathToWitch;
@@ -33,6 +34,7 @@ public class PersonBehaviour : MonoBehaviour
     //but for now just do not do it!
     void Start()
     {
+        EventManager.GetInstance().RegisterCharmEvent(OnCharm);
         _allNodes = GameObject.FindGameObjectsWithTag("Waypoint");
         movementSpeed = walkingSpeed;
         //ratCheckerCollider.radius = ratCheckRadius;
@@ -93,7 +95,7 @@ public class PersonBehaviour : MonoBehaviour
         // move towards movementDirection
         transform.position = Vector2.MoveTowards(transform.position, (Vector2)transform.position + _direction, movementSpeed * Time.deltaTime);
     }
-    public void OnCharm(WalkableNode location) {
+    private void OnCharm(WalkableNode location) {
 
         _isCharmed = true;
         _charmSource = location;

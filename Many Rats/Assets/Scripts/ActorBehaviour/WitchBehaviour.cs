@@ -26,18 +26,10 @@ public class WitchBehaviour : MonoBehaviour
         return _casting;
     }
 
-    private void CharmAllPersons() {
-        GameObject[] persons = GameObject.FindGameObjectsWithTag("Person");
-        if(persons == null) { return; }
-        foreach (GameObject person in GameObject.FindGameObjectsWithTag("Person")) {
-            person.GetComponent<PersonBehaviour>().OnCharm(NodeLocation);
-        }
-    }
-
     private void Update() {
         if (!_casting && _castTime < Time.time) {
             _casting = true;
-            CharmAllPersons();
+            EventManager.GetInstance().InvokeCharmEvent(NodeLocation);
         }
 
     }

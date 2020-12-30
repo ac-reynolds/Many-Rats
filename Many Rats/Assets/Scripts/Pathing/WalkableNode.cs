@@ -34,26 +34,33 @@ public class WalkableNode : MonoBehaviour
 
     void Start()
     {
-        //initialize graph with distances
-        _nodeDistances = new List<float>();
+        UpdateNeighborDistances();
+    }
 
-        for (int i = 0; i < neighbors.Count; i++) {
-            float distToNeighbor = Vector2.Distance(transform.position, neighbors[i].transform.position);
-            _nodeDistances.Add(distToNeighbor);
+    private void UpdateNeighborDistances() {
+        if (_nodeDistances == null) {
+            _nodeDistances = new List<float>();
+            for (int i = 0; i < neighbors.Count; i++) {
+                float distToNeighbor = Vector2.Distance(transform.position, neighbors[i].transform.position);
+                _nodeDistances.Add(distToNeighbor);
+            }
         }
     }
 
     //retrieves the distance to another node, using the stored distance values calculated at start when possible
     public float DistanceToNode(WalkableNode n) {
+
         if(neighbors.Contains(n)) {
             return _nodeDistances[neighbors.IndexOf(n)];
         } else {
+        
             return Vector3.Distance(transform.position, n.transform.position);
+        
         }
     }
 
     /*
-     * Dijkstra greedy algorithm to find shortest path to target.  Returns a list of node to be visited from this node.
+     * Dijkstra greedy algorithm to find shortest path to target.  Returns a list of node to be visited from this node, including this node.
      */
     public List<WalkableNode> RouteToTarget(WalkableNode target) {
 
@@ -74,13 +81,16 @@ public class WalkableNode : MonoBehaviour
 
         if (SummonDijkstra(ref visitedNodes, ref prospectiveNodes, target)) {
             foreach (KeyValuePair<WalkableNode, Tuple<float, WalkableNode>> entry in visitedNodes) {
-                Debug.Log(entry.Key.name);
+                //Debug.Log(entry.Key.name);
             }
             WalkableNode reversePathNode = target;
             while (reversePathNode != this) {
                 path.Add(reversePathNode);
+                //Debug.Log(reversePathNode.name);
                 reversePathNode = visitedNodes[reversePathNode].Item2;
             }
+            path.Add(this);
+            path.Reverse();
         }
 
         return path; 
@@ -121,9 +131,9 @@ public class WalkableNode : MonoBehaviour
 
             //add unvisited neighbors of next node to prospective nodes
             foreach (WalkableNode n in nextNode.neighbors) {
-                Debug.Log(nextNode.name + " has a neighbor " + n.name);
+                //Debug.Log(nextNode.name + " has a neighbor " + n.name);
                 if (!visited.ContainsKey(n) && !prospective.ContainsKey(n)) {
-                    Debug.Log("added " + n.name);
+                    //Debug.Log("added " + n.name);
                     prospective[n] = nextNode;
                 }
             }
@@ -142,5 +152,9 @@ public class WalkableNode : MonoBehaviour
         foreach (KeyValuePair<WalkableNode, WalkableNode> n in p) {
             Debug.Log(n.Key + " -[prev]-> " + n.Value);
         }
+    }
+
+    public override String ToString() {
+        return gameObject.name;
     }
 }

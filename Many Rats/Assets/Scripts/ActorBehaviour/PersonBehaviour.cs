@@ -18,19 +18,52 @@ public class PersonBehaviour : MonoBehaviour
 
     public UnityEvent personDelivered;
 
+
+    public float WaypointTagDistance = .5f;
+
+    private GameObject[] _allNodes;
+    private bool _isCharmed = false;
+    private WalkableNode _charmSource;
+    private List<WalkableNode> _pathToWitch;
+    private int _nextNodeOnPath;
+    private Vector2 _direction;
+
+
+    //do not call OnCharm during start ! waypoints aren't ready to go yet at start and we could fix that
+    //but for now just do not do it!
     void Start()
     {
+        _allNodes = GameObject.FindGameObjectsWithTag("Waypoint");
+        movementSpeed = walkingSpeed;
         //ratCheckerCollider.radius = ratCheckRadius;
         //checkForRats = ratCheckerObject.GetComponent<CheckForRats>();
-        movementDirection = transform.position;
-    }
-
-    public void OnCharm(WalkableNode location) {
-        Debug.Log("accepted");
     }
 
     void Update()
     {
+
+        //check for witch present if uncharmed
+        GameObject witch = GameObject.FindWithTag("Witch");
+        if (!_isCharmed && witch != null) {
+            WitchBehaviour wb = witch.GetComponent<WitchBehaviour>();
+            if (wb.IsCasting()) {
+                Debug.Log("being charmed ! ");
+                OnCharm(wb.NodeLocation);
+            }
+        }
+
+        if(_isCharmed) {
+            WalkableNode nextWaypoint = _pathToWitch[_nextNodeOnPath];
+
+            //if we're close enough to a waypoint, we'll move to the next one
+            if (Vector2.SqrMagnitude(transform.position - nextWaypoint.transform.position) < WaypointTagDistance
+                            && _nextNodeOnPath < _pathToWitch.Count - 1) {
+                _nextNodeOnPath++;
+                nextWaypoint = _pathToWitch[_nextNodeOnPath];
+            }
+            _direction = (nextWaypoint.transform.position - transform.position).normalized;
+        }
+
         return;
         // check for nearby rats
         nearbyRats = checkForRats.ReturnRats();
@@ -58,7 +91,27 @@ public class PersonBehaviour : MonoBehaviour
     private void FixedUpdate()
     {
         // move towards movementDirection
-        transform.position = Vector2.MoveTowards(transform.position, movementDirection, movementSpeed * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(transform.position, (Vector2)transform.position + _direction, movementSpeed * Time.deltaTime);
+    }
+    public void OnCharm(WalkableNode location) {
+
+        _isCharmed = true;
+        _charmSource = location;
+
+        //find closest waypoint to person
+        WalkableNode closestNode = null;
+        float minSquareDistance = float.MaxValue;
+        foreach (GameObject node in _allNodes) {
+            float nodeSquareDistance = Vector2.SqrMagnitude(transform.position - node.transform.position);
+            if (nodeSquareDistance < minSquareDistance) {
+                minSquareDistance = nodeSquareDistance;
+                closestNode = node.GetComponent<WalkableNode>();
+            }
+        }
+
+        _pathToWitch = closestNode.RouteToTarget(_charmSource);
+        _nextNodeOnPath = 0;
+
     }
 
     // calculate avg vector away from all nearby rats

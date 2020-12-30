@@ -34,7 +34,7 @@ public class SpawnManager : MonoBehaviour
         }
         _nextPersonSpawnTime = Random.Range(0.0f, MaxPersonSpawnTime);
         _nextWitchSpawnTime = WitchSpawn;
-        EventManager.GetInstance().RegisterRatSpawnEvent(SpawnRat);
+        EventManager.GetInstance().RegisterRatSpawnRequestEvent(SpawnRat);
     }
 
     void Update()
@@ -76,12 +76,6 @@ public class SpawnManager : MonoBehaviour
         int minNodeIndex = 0;
         int maxNodeIndex = _witchSpawns.Length;
         WalkableNode spawnLocation = _witchSpawns[Random.Range(minNodeIndex, maxNodeIndex)];
-        GameObject witchContainer = GameObject.Find("Actors/Witch");
-
-        //remove any existing witches
-        foreach (Transform w in witchContainer.transform) {
-            w.GetComponent<WitchBehaviour>().Die();
-        }
         GameObject witch = Instantiate(witchPrefab, spawnLocation.transform.position, Quaternion.identity, GameObject.Find("Actors/Witch").transform);
         witch.GetComponent<WitchBehaviour>().SetNode(spawnLocation);
     }

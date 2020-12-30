@@ -14,7 +14,6 @@ public class RatBehaviour : MonoBehaviour
     [SerializeField] private float ratCheckRadius;
     [SerializeField] private CircleCollider2D ratCheckerCollider;
     [SerializeField] private GameObject ratCheckerObject;
-    private CheckForRats checkForRats;
     private List<GameObject> nearbyRats;
     [SerializeField] private int ratHordeCriticalMass;
     [SerializeField] private GameObject ratHordePrefab;
@@ -54,23 +53,6 @@ public class RatBehaviour : MonoBehaviour
         //}
 
         return;
-        // check # of nearby rats
-        nearbyRats = checkForRats.ReturnRats();
-        if (nearbyRats != null)
-        {
-            // if there's enough to form a horde
-            if (nearbyRats.Count > ratHordeCriticalMass)
-            {
-                for(int i = 0; i < nearbyRats.Count; i++)
-                {
-                    // set other rats inactive
-                    //nearbyRats[i].SetActive(false);
-                }
-                // instantiate the horde, then set this rat as inactive
-                //Instantiate(ratHordePrefab, transform.position, Quaternion.identity);
-                //this.gameObject.SetActive(false);
-            }
-        }
     }
     void FixedUpdate()
     {

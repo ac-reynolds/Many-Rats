@@ -18,7 +18,7 @@ public class InputHandler : MonoBehaviour
             Vector3 cameraRayOrigin = cameraRay.origin;
             Vector3 cameraRayDirection = cameraRay.direction;
             Vector3 newRatPosition = cameraRayOrigin - cameraRayOrigin.z / cameraRayDirection.z * cameraRayDirection;
-            EventManager.GetInstance().InvokeRatSpawnEvent(newRatPosition);
+            EventManager.GetInstance().InvokeRatSpawnRequestEvent(newRatPosition);
         }
 
         //if user right clicks, cheese will spawn at cursor location if there is cheese available GameManager.cheeseAvailable

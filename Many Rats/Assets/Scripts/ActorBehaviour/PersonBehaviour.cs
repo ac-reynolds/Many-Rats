@@ -5,24 +5,17 @@ using UnityEngine.Events;
 
 public class PersonBehaviour : MonoBehaviour
 {
-    [SerializeField] private float ratCheckRadius;
-    [SerializeField] private CircleCollider2D ratCheckerCollider;
-    [SerializeField] private GameObject ratCheckerObject;
-    private List<GameObject> nearbyRats;
-    private CheckForRats checkForRats;
-    private GameObject witchObject;
-    private Vector2 movementDirection;
-    private float movementSpeed;
-    [SerializeField] private float walkingSpeed;
-    [SerializeField] private float runningSpeed;
+    [SerializeField] private float _ratCheckRadius = 20;
+    [SerializeField] private float _walkingSpeed = 1.0f;
+    [SerializeField] private float _runningSpeed = 2.5f;
+    [SerializeField] private float _waypointTagSqrDistance = .5f;
+    [SerializeField] private float _fearDuration = 0.5f;
 
-    public UnityEvent personDelivered;
-
-
-    public float WaypointTagDistance = .5f;
-
-
+    private RatDetector _ratDetector;
+    private float _movementSpeed;
     private GameObject[] _allNodes;//for finding nearest node
+    private float _fearTimeout = 0.0f;
+    private bool _isFeared = false;
     private bool _isCharmed = false;
     private WalkableNode _charmSource;
     private List<WalkableNode> _pathToWitch;
@@ -30,73 +23,83 @@ public class PersonBehaviour : MonoBehaviour
     private Vector2 _direction;
 
 
-    //do not call OnCharm during start ! waypoints aren't ready to go yet at start and we could fix that
-    //but for now just do not do it!
     void Start()
     {
         EventManager.GetInstance().RegisterCharmEvent(OnCharm);
+        EventManager.GetInstance().RegisterWitchDespawnEvent(OnWitchDespawn);
         _allNodes = GameObject.FindGameObjectsWithTag("Waypoint");
-        movementSpeed = walkingSpeed;
-        //ratCheckerCollider.radius = ratCheckRadius;
-        //checkForRats = ratCheckerObject.GetComponent<CheckForRats>();
+        _movementSpeed = _walkingSpeed;
+        _ratDetector = GetComponentInChildren<RatDetector>();
+        _ratDetector.GetComponent<CircleCollider2D>().radius = _ratCheckRadius;
+        TryToFixate();
     }
 
     void Update()
     {
+        if (_fearTimeout <= Time.time) {//only change state if not feared
 
-        //check for witch present if uncharmed
-        GameObject witch = GameObject.FindWithTag("Witch");
-        if (!_isCharmed && witch != null) {
-            WitchBehaviour wb = witch.GetComponent<WitchBehaviour>();
-            if (wb.IsCasting()) {
-                Debug.Log("being charmed ! ");
-                OnCharm(wb.NodeLocation);
+            //if nearby rats, become afraid
+            if (_ratDetector.RatsNearby()) {
+                _isFeared = true;
+                _movementSpeed = _runningSpeed;
+                _direction = _ratDetector.RunningFromRatsDirection();
+                _fearTimeout = Time.time + _fearDuration;
+                return;
+            } else {
+                if (_isFeared) {
+                    _isFeared = false;
+                    TryToFixate();
+                }
+                _movementSpeed = _walkingSpeed;
+                if (_isCharmed) {
+                    WalkableNode nextWaypoint = _pathToWitch[_nextNodeOnPath];
+
+                    //if we're close enough to a waypoint, we'll move to the next one
+                    if (Vector2.SqrMagnitude(transform.position - nextWaypoint.transform.position) < _waypointTagSqrDistance
+                                    && _nextNodeOnPath < _pathToWitch.Count - 1) {
+                        _nextNodeOnPath++;
+                        nextWaypoint = _pathToWitch[_nextNodeOnPath];
+                    }
+                    _direction = (nextWaypoint.transform.position - transform.position).normalized;
+                } else {
+                    //if not charmed and no rats, nearby, nothing
+                    _direction = Vector2.zero;
+                }
+            }
+        }
+    }
+
+    //finds closest witch and fixates on it
+    private void TryToFixate() {
+
+        GameObject[] witches = GameObject.FindGameObjectsWithTag("Witch");
+        float minWitchDistance = float.MaxValue;
+        GameObject closestWitch = null;
+
+        //find closest witch
+        foreach (GameObject witch in witches) {
+            float witchDistance = Vector2.SqrMagnitude(witch.transform.position - transform.position);
+            if (witch.GetComponent<WitchBehaviour>().IsCasting() && witchDistance < minWitchDistance) {
+                minWitchDistance = witchDistance;
+                closestWitch = witch;
             }
         }
 
-        if(_isCharmed) {
-            WalkableNode nextWaypoint = _pathToWitch[_nextNodeOnPath];
-
-            //if we're close enough to a waypoint, we'll move to the next one
-            if (Vector2.SqrMagnitude(transform.position - nextWaypoint.transform.position) < WaypointTagDistance
-                            && _nextNodeOnPath < _pathToWitch.Count - 1) {
-                _nextNodeOnPath++;
-                nextWaypoint = _pathToWitch[_nextNodeOnPath];
-            }
-            _direction = (nextWaypoint.transform.position - transform.position).normalized;
-        }
-
-        return;
-        // check for nearby rats
-        nearbyRats = checkForRats.ReturnRats();
-        if (nearbyRats.Count > 0)
-        {
-            // if there are any nearby rats, calculate average rat position and change to running speed
-            //Debug.Log("running");
-            CalculateAverageRatVector();
-            movementDirection = Vector3.Normalize(CalculateAverageRatVector());
-            movementSpeed = runningSpeed;
-        }
-        else
-        {
-            // otherwise find the witch and move directly towards witch and change to wakling speed
-            //Debug.Log("moving");
-            witchObject = GameObject.FindGameObjectWithTag("Witch");
-            if (witchObject != null)
-            {
-                movementDirection = Vector3.Normalize(witchObject.transform.position);
-            }
-            movementSpeed = walkingSpeed;
+        //charm towards closest witch
+        if (closestWitch != null) {
+            OnCharm(closestWitch.GetComponent<WitchBehaviour>().NodeLocation);
         }
     }
 
     private void FixedUpdate()
     {
         // move towards movementDirection
-        transform.position = Vector2.MoveTowards(transform.position, (Vector2)transform.position + _direction, movementSpeed * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(transform.position, (Vector2)transform.position + _direction, _movementSpeed * Time.deltaTime);
     }
     private void OnCharm(WalkableNode location) {
-
+        if (_isCharmed) {
+            return;
+        }
         _isCharmed = true;
         _charmSource = location;
 
@@ -116,33 +119,14 @@ public class PersonBehaviour : MonoBehaviour
 
     }
 
-    // calculate avg vector away from all nearby rats
-    private Vector3 CalculateAverageRatVector()
-    {
-        Vector3 averageRatVector = new Vector3(0, 0, 0);
-        foreach(GameObject rat in nearbyRats)
-        {
-            averageRatVector += transform.position - rat.transform.position;
-        }
-        return averageRatVector;
+    private void OnWitchDespawn() {
+        _isCharmed = false;
     }
 
-    // collision cases for different objects
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if(other.CompareTag("RatHorde"))
-        {
-            this.gameObject.SetActive(false);
-            other.gameObject.SetActive(false);
-        }
-        if(other.CompareTag("Witch"))
-        {
-            this.gameObject.SetActive(false);
-        }
-        if(other.CompareTag("Carriage"))
-        {
-            personDelivered.Invoke();
-            this.gameObject.SetActive(false);
-        }
+    public void Die() {
+        EventManager.GetInstance().UnregisterCharmEvent(OnCharm);
+        EventManager.GetInstance().UnregisterWitchDespawnEvent(OnWitchDespawn);
+        _ratDetector.Die();
+        Destroy(gameObject);
     }
 }

@@ -27,20 +27,9 @@ public class SceneLoader : MonoBehaviour
         SceneManager.LoadScene("MainMenu");
     }
 
-    public void LoadTutorial1Scene()
+    public void LoadGameScene()
     {
-        SceneManager.LoadScene("Tutorial1");
+        SceneManager.LoadScene("Game");
     }
-    public void LoadTutorial2Scene()
-    {
-        SceneManager.LoadScene("Tutorial2");
-    }
-    public void LoadTutorial3Scene()
-    {
-        SceneManager.LoadScene("Tutorial3");
-    }
-    public void LoadTutorial4Scene()
-    {
-        SceneManager.LoadScene("Tutorial4");
-    }
+
 }

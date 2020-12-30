@@ -71,6 +71,7 @@ GameObject:
   - component: {fileID: 6061668746813443931}
   - component: {fileID: 6061668746813443930}
   - component: {fileID: 6061668746813443928}
+  - component: {fileID: 73591515885920350}
   m_Layer: 0
   m_Name: Person
   m_TagString: Person
@@ -160,3 +161,24 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 6
+--- !u!114 &73591515885920350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6061668746813443932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8056c4f77b455a04db4c0652c69269b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ratCheckRadius: 0
+  ratCheckerCollider: {fileID: 0}
+  ratCheckerObject: {fileID: 0}
+  walkingSpeed: 2
+  runningSpeed: 4
+  personDelivered:
+    m_PersistentCalls:
+      m_Calls: []
+  WaypointTagDistance: 0.5

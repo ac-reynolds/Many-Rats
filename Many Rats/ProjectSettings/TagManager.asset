@@ -10,6 +10,7 @@ TagManager:
   - Witch
   - Carriage
   - Cheese
+  - Waypoint
   layers:
   - Default
   - TransparentFX

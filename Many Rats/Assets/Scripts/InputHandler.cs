@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class InputHandler : MonoBehaviour
 {
-
-    public GameObject RatPrefab;
     public GameObject CheesePrefab;
     public Camera Camera;
 

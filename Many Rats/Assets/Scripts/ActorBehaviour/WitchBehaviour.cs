@@ -20,6 +20,7 @@ public class WitchBehaviour : MonoBehaviour
 
     void Start()
     {
+        EventManagerOneArg<SpawnWitchEvent, GameObject>.GetInstance().InvokeEvent(gameObject);
         _castTime = Time.time + CastDelay;
         _casting = false;
         _despawnTime = Time.time + _timeUntilDespawn;
@@ -32,7 +33,6 @@ public class WitchBehaviour : MonoBehaviour
     private void Update() {
         if (!_casting && _castTime < Time.time) {
             _casting = true;
-            EventManager.GetInstance().InvokeCharmEvent(NodeLocation);
         }
 
         if (_despawnTime < Time.time) {
@@ -42,7 +42,8 @@ public class WitchBehaviour : MonoBehaviour
     }
 
     public void Die() {
-        EventManager.GetInstance().InvokeWitchDespawnEvent(NodeLocation);
+        EventManagerOneArg<DespawnWitchEvent, GameObject>.GetInstance().InvokeEvent(gameObject);
+        Debug.Log("witch die");
         Destroy(gameObject);
     }
     private void Consume(GameObject person) {

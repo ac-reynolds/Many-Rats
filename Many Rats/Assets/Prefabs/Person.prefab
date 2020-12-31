@@ -144,10 +144,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8056c4f77b455a04db4c0652c69269b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ratCheckRadius: 40
+  _ratCheckRadius: 5
   _walkingSpeed: 1
   _runningSpeed: 2.5
-  _waypointTagSqrDistance: 0.5
+  _waypointTagSqrDistance: 0.1
   _fearDuration: 0.5
 --- !u!1 &7916958217403791429
 GameObject:

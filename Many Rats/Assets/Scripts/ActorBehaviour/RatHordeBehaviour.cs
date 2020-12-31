@@ -26,7 +26,8 @@ public class RatHordeBehaviour : MonoBehaviour
 
     void Start()
     {
-        EventManager.GetInstance().RegisterPersonDieEvent(OnPersonDeath);
+        EventManagerOneArg<SpawnRatHordeEvent, GameObject>.GetInstance().InvokeEvent(gameObject);
+        EventManagerOneArg<DespawnPersonEvent, GameObject>.GetInstance().AddListener(OnPersonDespawn);
         _personDetector = GetComponentInChildren<PersonDetector>();
         _personDetector.GetComponent<CircleCollider2D>().radius = _personDetectorRadius;
         _personDetector.ratirl = this;
@@ -59,7 +60,7 @@ public class RatHordeBehaviour : MonoBehaviour
         }
     }
 
-    private void OnPersonDeath(GameObject person) {
+    private void OnPersonDespawn(GameObject person) {
         if(person == _targetPerson) {
             _currentState = HordeState.Waiting;
         }
@@ -126,7 +127,8 @@ public class RatHordeBehaviour : MonoBehaviour
     }
 
     public void Die() {
-        EventManager.GetInstance().UnregisterPersonDieEvent(OnPersonDeath);
+        EventManagerOneArg<DespawnRatHordeEvent, GameObject>.GetInstance().InvokeEvent(gameObject);
+        EventManagerOneArg<DespawnPersonEvent, GameObject>.GetInstance().RemoveListener(OnPersonDespawn);
         Destroy(gameObject);
     }
 }

@@ -13,8 +13,9 @@ public class RatDetector : MonoBehaviour
         _nearbyRats = new List<GameObject>();
         _nearbyRatHordes = new List<GameObject>();
         _sqTriggerDistance = Mathf.Pow(GetComponent<CircleCollider2D>().radius, 2);
-        EventManager.GetInstance().RegisterRatSpawnedEvent(OnRatSpawn);
-        EventManager.GetInstance().RegisterRatHordeSpawnedEvent(OnRatHordeSpawn);
+        EventManagerOneArg<SpawnRatEvent, GameObject>.GetInstance().AddListener(OnRatSpawn);
+        EventManagerOneArg<SpawnRatHordeEvent, GameObject>.GetInstance().AddListener(OnRatHordeSpawn);
+        EventManagerOneArg<DespawnRatEvent, GameObject>.GetInstance().AddListener(OnRatDespawn);
     }
 
     /*
@@ -31,6 +32,12 @@ public class RatDetector : MonoBehaviour
             fleeDirection += hordeToObject.normalized * (_sqTriggerDistance - Vector2.SqrMagnitude(hordeToObject));
         }
         return fleeDirection.normalized;
+    }
+
+    private void OnRatDespawn(GameObject rat) {
+        if (Vector3.SqrMagnitude(rat.transform.position - transform.position) < _sqTriggerDistance) {
+            _nearbyRats.Remove(rat);
+        }
     }
 
     private void OnRatSpawn(GameObject rat) {
@@ -77,6 +84,8 @@ public class RatDetector : MonoBehaviour
     }
 
     public void Die() {
-        EventManager.GetInstance().UnregisterRatSpawnedEvent(OnRatSpawn);
+        EventManagerOneArg<SpawnRatEvent, GameObject>.GetInstance().RemoveListener(OnRatSpawn);
+        EventManagerOneArg<SpawnRatHordeEvent, GameObject>.GetInstance().RemoveListener(OnRatHordeSpawn);
+        EventManagerOneArg<DespawnRatEvent, GameObject>.GetInstance().RemoveListener(OnRatDespawn);
     }
 }

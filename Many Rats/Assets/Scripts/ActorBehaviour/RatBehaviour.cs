@@ -6,6 +6,7 @@ public class RatBehaviour : MonoBehaviour
 {
     [SerializeField] private float _ratRandomness = 10;
     [SerializeField] private float _ratSpeed = 1;
+    [SerializeField] private float _timeUntilDespawn = 15;
 
     //for forming rat hordes
     [SerializeField] private float _ratDetectorRadius = 20;
@@ -15,19 +16,23 @@ public class RatBehaviour : MonoBehaviour
     private RatDetector _ratDetector;
     private const int MAX_DEGREES = 360;
     private Quaternion _direction;
+    private float _despawnTime;
+    private bool _wantToDie = false;
 
     private void SummonHorde(List<GameObject> rats) {
-        EventManager.GetInstance().InvokeRatHordeSpawnRequestEvent(transform.position);
+        EventManagerOneArg<RequestSpawnRatHordeEvent, Vector2>.GetInstance().InvokeEvent(transform.position);
         for (int i = 0; i < rats.Count; i++) {
             if (rats[i] != gameObject) {
-                rats[i].GetComponent<RatBehaviour>().Die(); 
+                rats[i].GetComponent<RatBehaviour>().DelayedDie(); 
             }
         }
-        Die(); // :(
+        DelayedDie(); // :(
     }
 
     void Start()
     {
+        EventManagerOneArg<SpawnRatEvent, GameObject>.GetInstance().InvokeEvent(gameObject);
+        _despawnTime = Time.time + _timeUntilDespawn;
         _ratDetector = GetComponentInChildren<RatDetector>();
         _ratDetector.GetComponent<CircleCollider2D>().radius = _ratDetectorRadius;
         _direction = Quaternion.AngleAxis(Random.Range(0, MAX_DEGREES), Vector3.forward);
@@ -37,6 +42,12 @@ public class RatBehaviour : MonoBehaviour
     {
         if (_ratDetector.NumNearbyRats() >= _numberOfRatsForHorde) {
             SummonHorde(_ratDetector.NearbyRats());
+        }
+        if(Time.time > _despawnTime) {
+            Die();
+        }
+        if(_wantToDie) {
+            Die();
         }
     }
     void FixedUpdate()
@@ -58,7 +69,12 @@ public class RatBehaviour : MonoBehaviour
         _direction.SetFromToRotation(Vector3.right, transform.position - (Vector3)collision.GetContact(0).point);
     }
 
+    //die on next update
+    public void DelayedDie() {
+        _wantToDie = true;
+    }
     public void Die() {
+        EventManagerOneArg<DespawnRatEvent, GameObject>.GetInstance().InvokeEvent(gameObject);
         _ratDetector.Die();
         Destroy(gameObject);
     }

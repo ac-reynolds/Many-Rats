@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class CarriageBehaviour : MonoBehaviour
 {
+    private void Start() {
+        EventManagerOneArg<SpawnCarriageEvent, GameObject>.GetInstance().InvokeEvent(gameObject);
+    }
     public WalkableNode NodeLocation
     {
         get; set;
     }
 
-    public void Die() {
-        Destroy(gameObject);
-    }
     private void AcceptPassenger(GameObject person) {
+        EventManagerZeroArgs<CarriageLoadingSuccessfulEvent>.GetInstance().InvokeEvent();
         person.GetComponent<PersonBehaviour>().Die();
     }
 
@@ -20,5 +21,9 @@ public class CarriageBehaviour : MonoBehaviour
         if (other.CompareTag("Person")) {
             AcceptPassenger(other.gameObject);
         }
+    }
+    public void Die() {
+        EventManagerOneArg<DespawnCarriageEvent, GameObject>.GetInstance().InvokeEvent(gameObject);
+        Destroy(gameObject);
     }
 }

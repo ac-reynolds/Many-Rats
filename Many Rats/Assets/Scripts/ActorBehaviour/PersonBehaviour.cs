@@ -25,8 +25,9 @@ public class PersonBehaviour : MonoBehaviour
 
     void Start()
     {
-        EventManager.GetInstance().RegisterCharmEvent(OnCharm);
-        EventManager.GetInstance().RegisterWitchDespawnEvent(OnWitchDespawn);
+        EventManagerOneArg<SpawnPersonEvent, GameObject>.GetInstance().InvokeEvent(gameObject);
+        EventManagerOneArg<SpawnWitchEvent, GameObject>.GetInstance().AddListener(OnCharm);
+        EventManagerOneArg<DespawnWitchEvent, GameObject>.GetInstance().AddListener(OnWitchDespawn);
         _allNodes = GameObject.FindGameObjectsWithTag("Waypoint");
         _movementSpeed = _walkingSpeed;
         _ratDetector = GetComponentInChildren<RatDetector>();
@@ -46,6 +47,7 @@ public class PersonBehaviour : MonoBehaviour
                 _fearTimeout = Time.time + _fearDuration;
                 return;
             } else {
+                //clear fear if there are no more rats
                 if (_isFeared) {
                     _isFeared = false;
                     TryToFixate();
@@ -63,7 +65,7 @@ public class PersonBehaviour : MonoBehaviour
                     _direction = (nextWaypoint.transform.position - transform.position).normalized;
                 } else {
                     //if not charmed and no rats, nearby, nothing
-                    _direction = Vector2.zero;
+                    TryToFixate();
                 }
             }
         }
@@ -80,21 +82,29 @@ public class PersonBehaviour : MonoBehaviour
         foreach (GameObject witch in witches) {
             float witchDistance = Vector2.SqrMagnitude(witch.transform.position - transform.position);
             if (witch.GetComponent<WitchBehaviour>().IsCasting() && witchDistance < minWitchDistance) {
-                minWitchDistance = witchDistance;
-                closestWitch = witch;
+                if(_charmSource != null) {
+                    if (witch.GetComponent<WitchBehaviour>().NodeLocation != _charmSource) {
+                        minWitchDistance = witchDistance;
+                        closestWitch = witch;
+                    }
+                } else {
+                    minWitchDistance = witchDistance;
+                    closestWitch = witch;
+                }
             }
         }
 
         //charm towards closest witch
         if (closestWitch != null) {
-            OnCharm(closestWitch.GetComponent<WitchBehaviour>().NodeLocation);
+            OnCharm(closestWitch);
         }
     }
 
-    private void FixedUpdate()
-    {
+    private void FixedUpdate() {
         // move towards movementDirection
-        transform.position = Vector2.MoveTowards(transform.position, (Vector2)transform.position + _direction, _movementSpeed * Time.deltaTime);
+        if (_isCharmed || _isFeared) {
+            transform.position = Vector2.MoveTowards(transform.position, (Vector2)transform.position + _direction, _movementSpeed * Time.deltaTime);
+        }
     }
 
     public WalkableNode ClosestNode() {
@@ -110,29 +120,32 @@ public class PersonBehaviour : MonoBehaviour
         return closestNode;
     }
 
-    private void OnCharm(WalkableNode location) {
+    private void OnCharm(GameObject witch) {
+        
         if (_isCharmed) {
             return;
         }
 
         _isCharmed = true;
-        _charmSource = location;
+        _charmSource = witch.GetComponent<WitchBehaviour>().NodeLocation;
 
         _pathToWitch = ClosestNode().RouteToTarget(_charmSource);
         _nextNodeOnPath = 0;
 
     }
 
-    private void OnWitchDespawn(WalkableNode node) {
+    private void OnWitchDespawn(GameObject witch) {
+        WalkableNode node = witch.GetComponent<WitchBehaviour>().NodeLocation;
         if (node == _charmSource) {
+            Debug.Log("lost target");
             _isCharmed = false;
         }
     }
 
     public void Die() {
-        EventManager.GetInstance().InvokePersonDieEvent(gameObject);
-        EventManager.GetInstance().UnregisterCharmEvent(OnCharm);
-        EventManager.GetInstance().UnregisterWitchDespawnEvent(OnWitchDespawn);
+        EventManagerOneArg<DespawnPersonEvent, GameObject>.GetInstance().InvokeEvent(gameObject);
+        EventManagerOneArg<SpawnWitchEvent, GameObject>.GetInstance().RemoveListener(OnCharm);
+        EventManagerOneArg<DespawnWitchEvent, GameObject>.GetInstance().RemoveListener(OnWitchDespawn);
         _ratDetector.Die();
         Destroy(gameObject);
     }

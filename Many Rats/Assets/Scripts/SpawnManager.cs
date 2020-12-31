@@ -4,19 +4,19 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    [SerializeField] private GameObject _carriagePrefab;
-    [SerializeField] private GameObject _personPrefab;
-    [SerializeField] private GameObject _ratPrefab;
-    [SerializeField] private GameObject _ratHordePrefab;
-    [SerializeField] private GameObject _witchPrefab;
+    public GameObject CarriagePrefab;
+    public GameObject PersonPrefab;
+    public GameObject RatPrefab;
+    public GameObject RatHordePrefab;
+    public GameObject WitchPrefab;
 
-    [SerializeField] private GameObject _carriageSpawnLocationsParent;
-    [SerializeField] private GameObject _personSpawnLocationsParent;
-    [SerializeField] private GameObject _witchSpawnLocationsParent;
+    public GameObject CarriageSpawnLocationsParentObject;
+    public GameObject PersonSpawnLocationsParentObject;
+    public GameObject WitchSpawnLocationsParentObject;
 
-    [SerializeField] private float _carriageSpawnTime = 2;
-    [SerializeField] private float _maxPersonSpawnTime = 3;
-    [SerializeField] private float _witchSpawnTime = 5;
+    public float CarriageSpawnTime = 2;
+    public float MaxPersonSpawnTime = 3;
+    public float WitchSpawnTime = 5;
 
     private List<WalkableNode> _carriageSpawns;
     private List<Transform> _personSpawns;
@@ -31,39 +31,40 @@ public class SpawnManager : MonoBehaviour
         _personSpawns = new List<Transform>();
         _witchSpawns = new List<WalkableNode>();
 
-        _carriageSpawns.AddRange(_carriageSpawnLocationsParent.GetComponentsInChildren<WalkableNode>());
-        foreach (Transform child in _personSpawnLocationsParent.transform) {
+        _carriageSpawns.AddRange(CarriageSpawnLocationsParentObject.GetComponentsInChildren<WalkableNode>());
+        foreach (Transform child in PersonSpawnLocationsParentObject.transform) {
             _personSpawns.Add(child);
         }
-        _witchSpawns.AddRange(_witchSpawnLocationsParent.GetComponentsInChildren<WalkableNode>());
+        _witchSpawns.AddRange(WitchSpawnLocationsParentObject.GetComponentsInChildren<WalkableNode>());
 
 
-        _nextPersonSpawnTime = Random.Range(0.0f, _maxPersonSpawnTime);
-        _nextWitchSpawnTime = _witchSpawnTime;
-        EventManager.GetInstance().RegisterRatSpawnRequestEvent(SpawnRat);
-        EventManager.GetInstance().RegisterRatHordeSpawnRequestEvent(SpawnRatHorde);
+        _nextPersonSpawnTime = Random.Range(0.0f, MaxPersonSpawnTime);
+        _nextWitchSpawnTime = WitchSpawnTime;
+        EventManagerOneArg<RequestSpawnRatEvent, Vector2>.GetInstance().AddListener(SpawnRat);
+        EventManagerOneArg<RequestSpawnRatHordeEvent, Vector2>.GetInstance().AddListener(SpawnRatHorde);
+        EventManagerOneArg<DespawnWitchEvent, GameObject>.GetInstance().AddListener(OnWitchDespawn);
     }
 
     void Update()
     {
         if (Time.time > _nextPersonSpawnTime) {
             SpawnPerson();
-            _nextPersonSpawnTime += Random.Range(0.0f, _maxPersonSpawnTime);
+            _nextPersonSpawnTime += Random.Range(0.0f, MaxPersonSpawnTime);
         }
 
         if (Time.time > _nextWitchSpawnTime) {
             SpawnWitch();
-            _nextWitchSpawnTime += _witchSpawnTime;
+            _nextWitchSpawnTime += WitchSpawnTime;
         }
 
         if (Time.time > _nextCarriageSpawnTime) {
             SpawnCarriage();
-            _nextCarriageSpawnTime += _carriageSpawnTime;
+            _nextCarriageSpawnTime += CarriageSpawnTime;
         }
     }
 
-    private void OnWitchDespawn(WalkableNode node) {
-        _witchSpawns.Add(node);
+    private void OnWitchDespawn(GameObject witch) {
+        _witchSpawns.Add(witch.GetComponent<WitchBehaviour>().NodeLocation);
     }
 
     
@@ -74,7 +75,7 @@ public class SpawnManager : MonoBehaviour
         int minNodeIndex = 0;
         int maxNodeIndex = _carriageSpawns.Count;
         WalkableNode spawnLocation = _carriageSpawns[Random.Range(minNodeIndex, maxNodeIndex)];
-        GameObject carriage = Instantiate(_carriagePrefab, spawnLocation.transform.position, Quaternion.identity, GameObject.Find("Actors/Carriages").transform);
+        GameObject carriage = Instantiate(CarriagePrefab, spawnLocation.transform.position, Quaternion.identity, GameObject.Find("Actors/Carriages").transform);
         carriage.GetComponent<CarriageBehaviour>().NodeLocation = spawnLocation;
         _carriageSpawns.Remove(spawnLocation);
     }
@@ -86,24 +87,22 @@ public class SpawnManager : MonoBehaviour
     private void SpawnPerson() {
         int minNodeIndex = 0;
         int maxNodeIndex = _personSpawns.Count;
-
-        List<WalkableNode> _viableSpawns = new List<WalkableNode>();
         Transform spawnLocation = _personSpawns[Random.Range(minNodeIndex, maxNodeIndex)];
-        Instantiate(_personPrefab, spawnLocation.position, Quaternion.identity, GameObject.Find("Actors/Persons").transform);
+        Instantiate(PersonPrefab, spawnLocation.position, Quaternion.identity, GameObject.Find("Actors/Persons").transform);
     }
 
     /*
      * Spanws a rat at the specified point.
      */
     private void SpawnRat(Vector2 boardPosition) {
-        Instantiate(_ratPrefab, boardPosition, Quaternion.identity, GameObject.Find("Actors/Rats").transform);
+        Instantiate(RatPrefab, boardPosition, Quaternion.identity, GameObject.Find("Actors/Rats").transform);
     }
 
     /*
      * Spawns a rat horde at the specified point.
      */
     private void SpawnRatHorde(Vector2 boardPosition) {
-        Instantiate(_ratHordePrefab, boardPosition, Quaternion.identity, GameObject.Find("Actors/RatHordes").transform);
+        Instantiate(RatHordePrefab, boardPosition, Quaternion.identity, GameObject.Find("Actors/RatHordes").transform);
     }
 
     /*
@@ -114,14 +113,12 @@ public class SpawnManager : MonoBehaviour
         if (_witchSpawns.Count == 0) {
             return;
         }
-
         int minNodeIndex = 0;
         int maxNodeIndex = _witchSpawns.Count;
         int rand = Random.Range(minNodeIndex, maxNodeIndex);
         WalkableNode spawnLocation = _witchSpawns[rand];
-        GameObject witch = Instantiate(_witchPrefab, spawnLocation.transform.position, Quaternion.identity, GameObject.Find("Actors/Witch").transform);
+        GameObject witch = Instantiate(WitchPrefab, spawnLocation.transform.position, Quaternion.identity, GameObject.Find("Actors/Witch").transform);
         witch.GetComponent<WitchBehaviour>().NodeLocation = spawnLocation;
         _witchSpawns.Remove(spawnLocation);
     }
-
 }

@@ -4,64 +4,49 @@ using UnityEngine;
 
 public class RatBehaviour : MonoBehaviour
 {
-    public float RatRandomness = 10;
-    public float RatSpeed = 1;
+    [SerializeField] private float _ratRandomness = 10;
+    [SerializeField] private float _ratSpeed = 1;
 
+    //for forming rat hordes
+    [SerializeField] private float _ratDetectorRadius = 20;
+    [SerializeField] private int _numberOfRatsForHorde = 5;
+    [SerializeField] private GameObject ratHordePrefab;
+
+    private RatDetector _ratDetector;
     private const int MAX_DEGREES = 360;
     private Quaternion _direction;
 
-    // rat horde stuff
-    [SerializeField] private float ratCheckRadius;
-    [SerializeField] private CircleCollider2D ratCheckerCollider;
-    [SerializeField] private GameObject ratCheckerObject;
-    private List<GameObject> nearbyRats;
-    [SerializeField] private int ratHordeCriticalMass;
-    [SerializeField] private GameObject ratHordePrefab;
-
-    // cheese stuff
-    [SerializeField] private float cheeseCheckRadius;
-    [SerializeField] private CircleCollider2D cheeseFinderCollider;
-    [SerializeField] private GameObject cheeseFinderObject;
-    private CheeseFinder cheeseFinder;
-    private bool nearbyCheese;
+    private void SummonHorde(List<GameObject> rats) {
+        EventManager.GetInstance().InvokeRatHordeSpawnRequestEvent(transform.position);
+        for (int i = 0; i < rats.Count; i++) {
+            if (rats[i] != gameObject) {
+                rats[i].GetComponent<RatBehaviour>().Die(); 
+            }
+        }
+        Die(); // :(
+    }
 
     void Start()
     {
+        _ratDetector = GetComponentInChildren<RatDetector>();
+        _ratDetector.GetComponent<CircleCollider2D>().radius = _ratDetectorRadius;
         _direction = Quaternion.AngleAxis(Random.Range(0, MAX_DEGREES), Vector3.forward);
 
-        /*
-        // find rat checker
-        ratCheckerCollider.radius = ratCheckRadius;
-        checkForRats = ratCheckerObject.GetComponent<CheckForRats>();
-
-        // find cheese finder
-        cheeseFinderCollider.radius = cheeseCheckRadius;
-        cheeseFinder = cheeseFinderObject.GetComponent<CheeseFinder>();
-
-        nearbyCheese = false;
-        */
     }
     private void Update()
     {
-
-
-        // check if cheese has been found
-        //nearbyCheese = cheeseFinder.ReturnCheeseFound();
-        //if (nearbyCheese == true) {
-            // move directly towards cheese if there is cheese detected
-            //_direction = cheeseFinder.ReturnCheeseCoordinates() - transform.position;
-        //}
-
-        return;
+        if (_ratDetector.NumNearbyRats() >= _numberOfRatsForHorde) {
+            SummonHorde(_ratDetector.NearbyRats());
+        }
     }
     void FixedUpdate()
     {
         //randomize direction slightly
-        _direction *= Quaternion.AngleAxis(Random.Range(-RatRandomness, RatRandomness), Vector3.forward);
+        _direction *= Quaternion.AngleAxis(Random.Range(-_ratRandomness, _ratRandomness), Vector3.forward);
         
         //move rat
         Vector3 directionVector = _direction * Vector3.right;
-        transform.position = Vector2.MoveTowards(transform.position, transform.position + directionVector, RatSpeed * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(transform.position, transform.position + directionVector, _ratSpeed * Time.deltaTime);
 
         //flip orientation based on motion
         Vector3 scale = transform.localScale;
@@ -71,5 +56,10 @@ public class RatBehaviour : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision) {
         _direction.SetFromToRotation(Vector3.right, transform.position - (Vector3)collision.GetContact(0).point);
+    }
+
+    public void Die() {
+        _ratDetector.Die();
+        Destroy(gameObject);
     }
 }

@@ -39,7 +39,7 @@ public class PersonBehaviour : MonoBehaviour
         if (_fearTimeout <= Time.time) {//only change state if not feared
 
             //if nearby rats, become afraid
-            if (_ratDetector.RatsNearby()) {
+            if (_ratDetector.NumNearbyRats() > 0) {
                 _isFeared = true;
                 _movementSpeed = _runningSpeed;
                 _direction = _ratDetector.RunningFromRatsDirection();
@@ -96,14 +96,8 @@ public class PersonBehaviour : MonoBehaviour
         // move towards movementDirection
         transform.position = Vector2.MoveTowards(transform.position, (Vector2)transform.position + _direction, _movementSpeed * Time.deltaTime);
     }
-    private void OnCharm(WalkableNode location) {
-        if (_isCharmed) {
-            return;
-        }
-        _isCharmed = true;
-        _charmSource = location;
 
-        //find closest waypoint to person
+    public WalkableNode ClosestNode() {
         WalkableNode closestNode = null;
         float minSquareDistance = float.MaxValue;
         foreach (GameObject node in _allNodes) {
@@ -113,17 +107,30 @@ public class PersonBehaviour : MonoBehaviour
                 closestNode = node.GetComponent<WalkableNode>();
             }
         }
+        return closestNode;
+    }
 
-        _pathToWitch = closestNode.RouteToTarget(_charmSource);
+    private void OnCharm(WalkableNode location) {
+        if (_isCharmed) {
+            return;
+        }
+
+        _isCharmed = true;
+        _charmSource = location;
+
+        _pathToWitch = ClosestNode().RouteToTarget(_charmSource);
         _nextNodeOnPath = 0;
 
     }
 
-    private void OnWitchDespawn() {
-        _isCharmed = false;
+    private void OnWitchDespawn(WalkableNode node) {
+        if (node == _charmSource) {
+            _isCharmed = false;
+        }
     }
 
     public void Die() {
+        EventManager.GetInstance().InvokePersonDieEvent(gameObject);
         EventManager.GetInstance().UnregisterCharmEvent(OnCharm);
         EventManager.GetInstance().UnregisterWitchDespawnEvent(OnWitchDespawn);
         _ratDetector.Die();

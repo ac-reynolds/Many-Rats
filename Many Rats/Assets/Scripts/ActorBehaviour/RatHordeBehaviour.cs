@@ -4,50 +4,129 @@ using UnityEngine;
 
 public class RatHordeBehaviour : MonoBehaviour
 {
-    [SerializeField] private float personFindRadius;
-    [SerializeField] private CircleCollider2D personFinderCollider;
-    [SerializeField] private GameObject personFinderObject;
-    private PersonFinder personFinder;
-    private List<GameObject> peopleFound;
-    private int closestPersonIndex;
-    private Vector3 closestPersonVector;
+    [SerializeField] private float _personDetectorRadius;
+    [SerializeField] private float _runSpeed = 2.0f;
+    [SerializeField] private float _waypointTagSqrDistance = .1f;
+    [SerializeField] private float _chaseTimeout = 5;//if it hasn't found target for this long, it'll reset its behavior
 
-    private Vector3 currentTarget;
+    private enum HordeState
+    {
+        Waiting, //awaiting orders
+        Pathing, //following waypoint movement commands
+        Chasing  //following target directly
+    }
 
-    [SerializeField] private float ratHordeSpeed;
+    private PersonDetector _personDetector;
+    private GameObject[] _allNodes;     //for finding nearest node
+    private GameObject _targetPerson;   //the kill target
+    private WalkableNode _targetNode;   //node closest to kill target at fixate time
+    private HordeState _currentState = HordeState.Waiting;      //when pathing along waypoints
+    private float _movementSpeed;
+    private float _endChaseTime;
 
     void Start()
     {
-        // assume closest person is unreasonably far away, so even actually far away people will still be chased
-        closestPersonVector = new Vector3(10000, 10000, 10000);
-        personFinderCollider.radius = personFindRadius;
-        personFinder = personFinderObject.GetComponent<PersonFinder>();
-        currentTarget = transform.position;
+        EventManager.GetInstance().RegisterPersonDieEvent(OnPersonDeath);
+        _personDetector = GetComponentInChildren<PersonDetector>();
+        _personDetector.GetComponent<CircleCollider2D>().radius = _personDetectorRadius;
+        _personDetector.ratirl = this;
+        _allNodes = GameObject.FindGameObjectsWithTag("Waypoint");
+        _movementSpeed = _runSpeed;
     }
 
-    void Update()
-    {
-        // check if there's any persons nearby
-        peopleFound = personFinder.ReturnPeople();
-        if (peopleFound != null)
-        {
-            for (int i = 0; i < peopleFound.Count; i++)
-            {
-                // check who is the closest
-                if ((peopleFound[i].transform.position - transform.position).magnitude < closestPersonVector.magnitude)
-                {
-                    closestPersonVector = peopleFound[i].transform.position - transform.position;
-                    closestPersonIndex = i;
-                }
-            }
-            // get their position
-            currentTarget = peopleFound[closestPersonIndex].transform.position;
+    private void Update() {
+
+        //when a waypoint is reached, find next waypoint
+        if (_currentState == HordeState.Pathing && Vector2.SqrMagnitude(transform.position - _targetNode.transform.position) < _waypointTagSqrDistance) {
+            PathToClosest();
+        }
+
+        if (_currentState == HordeState.Waiting) {
+            PathToClosest();
+        }
+
+        if (_currentState == HordeState.Chasing && _endChaseTime < Time.time) {
+            _currentState = HordeState.Waiting;
         }
     }
 
     private void FixedUpdate()
     {
-        // hunt them down
-        transform.position = Vector2.MoveTowards(transform.position, currentTarget, ratHordeSpeed * Time.deltaTime);
+        if (_currentState == HordeState.Chasing) {
+            transform.position = Vector2.MoveTowards(transform.position, _targetPerson.transform.position, _movementSpeed * Time.deltaTime);
+        } else if (_currentState == HordeState.Pathing) {
+            transform.position = Vector2.MoveTowards(transform.position, _targetNode.transform.position, _movementSpeed * Time.deltaTime);
+        }
+    }
+
+    private void OnPersonDeath(GameObject person) {
+        if(person == _targetPerson) {
+            _currentState = HordeState.Waiting;
+        }
+    }
+    private void PathToClosest() {
+        _targetPerson = FindClosestPerson();
+        if (_targetPerson != null) {
+            List<WalkableNode> route = RouteToTarget(_targetPerson);
+            if (route.Count > 1) {//nontrivial route
+                _targetNode = route[1];//first nontrivial node (next node in route)
+                _currentState = HordeState.Pathing;
+            } else {
+                _currentState = HordeState.Chasing;
+                _endChaseTime = Time.time + _chaseTimeout;
+            }
+        } else {
+            _currentState = HordeState.Waiting;
+        }
+    }
+
+    //finds the nearest person to the target, and sets route to target
+    private GameObject FindClosestPerson() {
+        GameObject[] persons = GameObject.FindGameObjectsWithTag("Person");
+        float minPersonDistance = float.MaxValue;
+        GameObject closestPerson = null;
+
+        //find closest person
+        foreach (GameObject person in persons) {
+            float personDistance = Vector2.SqrMagnitude(person.transform.position - transform.position);
+            if (personDistance < minPersonDistance) {
+                minPersonDistance = personDistance;
+                closestPerson = person;
+            }
+        }
+        return closestPerson;
+    }
+
+    private List<WalkableNode> RouteToTarget(GameObject person) { 
+
+        //find closest node to person
+        if (person != null) {
+            _targetNode = person.GetComponent<PersonBehaviour>().ClosestNode();
+        }
+
+        GameObject[] nodes = GameObject.FindGameObjectsWithTag("Waypoint");
+
+        //find closest node
+        WalkableNode closestNode = null;
+        float minSquareDistance = float.MaxValue;
+        foreach (GameObject node in _allNodes) {
+            float nodeSquareDistance = Vector2.SqrMagnitude(transform.position - node.transform.position);
+            if (nodeSquareDistance < minSquareDistance) {
+                minSquareDistance = nodeSquareDistance;
+                closestNode = node.GetComponent<WalkableNode>();
+            }
+        }
+
+        //calculate route to target node from closest node
+        return closestNode.RouteToTarget(_targetNode);
+    }
+
+    public void Kill(PersonBehaviour person) {
+        person.Die();
+    }
+
+    public void Die() {
+        EventManager.GetInstance().UnregisterPersonDieEvent(OnPersonDeath);
+        Destroy(gameObject);
     }
 }

@@ -5,13 +5,16 @@ using UnityEngine;
 public class RatDetector : MonoBehaviour
 {
     private List<GameObject> _nearbyRats;
+    private List<GameObject> _nearbyRatHordes;
     private float _sqTriggerDistance;
 
     private void Start()
     {
         _nearbyRats = new List<GameObject>();
+        _nearbyRatHordes = new List<GameObject>();
         _sqTriggerDistance = Mathf.Pow(GetComponent<CircleCollider2D>().radius, 2);
         EventManager.GetInstance().RegisterRatSpawnedEvent(OnRatSpawn);
+        EventManager.GetInstance().RegisterRatHordeSpawnedEvent(OnRatHordeSpawn);
     }
 
     /*
@@ -23,6 +26,10 @@ public class RatDetector : MonoBehaviour
             Vector2 ratToObject = (Vector2)(transform.position - rat.transform.position);
             fleeDirection += ratToObject.normalized * (_sqTriggerDistance - Vector2.SqrMagnitude(ratToObject));
         }
+        foreach (GameObject horde in _nearbyRatHordes) {
+            Vector2 hordeToObject = (Vector2)(transform.position - horde.transform.position);
+            fleeDirection += hordeToObject.normalized * (_sqTriggerDistance - Vector2.SqrMagnitude(hordeToObject));
+        }
         return fleeDirection.normalized;
     }
 
@@ -32,16 +39,28 @@ public class RatDetector : MonoBehaviour
         } 
     }
 
-    public bool RatsNearby() {
-        return (_nearbyRats.Count > 0);
+    private void OnRatHordeSpawn(GameObject ratHorde) {
+        if (Vector3.SqrMagnitude(ratHorde.transform.position - transform.position) < _sqTriggerDistance) {
+            _nearbyRats.Add(ratHorde);
+        }
+    }
+
+    public int NumNearbyRats() {
+        return _nearbyRats.Count;
+    }
+
+    public List<GameObject> NearbyRats() {
+        return _nearbyRats;
     }
 
     // adds rat in range to list of otherRats
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Rat"))
-        {
+        if (other.CompareTag("Rat")) {
             _nearbyRats.Add(other.gameObject);
+        }
+        else if (other.CompareTag("RatHorde")) {
+            _nearbyRatHordes.Add(other.gameObject);
         }
     }
 
@@ -51,6 +70,9 @@ public class RatDetector : MonoBehaviour
         if (other.CompareTag("Rat"))
         {
             _nearbyRats.Remove(other.gameObject);
+        }
+        else if (other.CompareTag("RatHorde")) {
+            _nearbyRatHordes.Remove(other.gameObject);
         }
     }
 

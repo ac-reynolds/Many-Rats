@@ -19,7 +19,7 @@ public class SpawnManager : MonoBehaviour
     public float WitchSpawnTime = 5;
 
     private List<WalkableNode> _carriageSpawns;
-    private List<WalkableNode> _personSpawns;
+    private List<Transform> _personSpawns;
     private List<WalkableNode> _witchSpawns;
     private float _nextPersonSpawnTime;
     private float _nextCarriageSpawnTime;
@@ -28,12 +28,15 @@ public class SpawnManager : MonoBehaviour
     void Start()
     {
         _carriageSpawns = new List<WalkableNode>();
-        _personSpawns = new List<WalkableNode>();
+        _personSpawns = new List<Transform>();
         _witchSpawns = new List<WalkableNode>();
 
         _carriageSpawns.AddRange(CarriageSpawnLocationsParentObject.GetComponentsInChildren<WalkableNode>());
-        _personSpawns.AddRange(PersonSpawnLocationsParentObject.GetComponentsInChildren<WalkableNode>());
+        foreach (Transform child in PersonSpawnLocationsParentObject.transform) {
+            _personSpawns.Add(child);
+        }
         _witchSpawns.AddRange(WitchSpawnLocationsParentObject.GetComponentsInChildren<WalkableNode>());
+
 
         _nextPersonSpawnTime = Random.Range(0.0f, MaxPersonSpawnTime);
         _nextWitchSpawnTime = WitchSpawnTime;
@@ -64,6 +67,7 @@ public class SpawnManager : MonoBehaviour
         _witchSpawns.Add(witch.GetComponent<WitchBehaviour>().NodeLocation);
     }
 
+    
     private void SpawnCarriage() {
         if(_carriageSpawns.Count == 0) {
             return;
@@ -83,8 +87,8 @@ public class SpawnManager : MonoBehaviour
     private void SpawnPerson() {
         int minNodeIndex = 0;
         int maxNodeIndex = _personSpawns.Count;
-        WalkableNode spawnLocation = _personSpawns[Random.Range(minNodeIndex, maxNodeIndex)];
-        Instantiate(PersonPrefab, spawnLocation.transform.position, Quaternion.identity, GameObject.Find("Actors/Persons").transform);
+        Transform spawnLocation = _personSpawns[Random.Range(minNodeIndex, maxNodeIndex)];
+        Instantiate(PersonPrefab, spawnLocation.position, Quaternion.identity, GameObject.Find("Actors/Persons").transform);
     }
 
     /*

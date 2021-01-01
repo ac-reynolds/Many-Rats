@@ -148,7 +148,7 @@ MonoBehaviour:
   _walkingSpeed: 1
   _runningSpeed: 2.5
   _waypointTagSqrDistance: 0.1
-  _fearDuration: 0.5
+  _fearDuration: 3
 --- !u!1 &7916958217403791429
 GameObject:
   m_ObjectHideFlags: 0

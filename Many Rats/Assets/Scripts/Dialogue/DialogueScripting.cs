@@ -117,6 +117,10 @@ public class DialogueScripting : MonoBehaviour
         for(int i=0; i< currentDisplayText.Length + 1; i++)
         {
             dialogue1Text.text = currentDisplayText.Substring(0,i);
+            if(i == currentDisplayText.Length)
+            {
+                currentDialogueLine++;
+            }
             yield return new WaitForSecondsRealtime(textDelay);
         }
     }
@@ -126,6 +130,10 @@ public class DialogueScripting : MonoBehaviour
         for (int i = 0; i < currentDisplayText.Length + 1; i++)
         {
             dialogue2Text.text = currentDisplayText.Substring(0, i);
+            if (i == currentDisplayText.Length)
+            {
+                currentDialogueLine++;
+            }
             yield return new WaitForSecondsRealtime(textDelay);
         }
     }
@@ -135,6 +143,10 @@ public class DialogueScripting : MonoBehaviour
         for (int i = 0; i < currentDisplayText.Length + 1; i++)
         {
             tutorialPromptText.text = currentDisplayText.Substring(0, i);
+            if (i == currentDisplayText.Length)
+            {
+                currentDialogueLine++;
+            }
             yield return new WaitForSecondsRealtime(textDelay);
         }
     }

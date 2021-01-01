@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CastDelay: 1
-  NodeLocation: {fileID: 0}
+  _timeUntilDespawn: 20
 --- !u!58 &4794421169143412839
 CircleCollider2D:
   m_ObjectHideFlags: 0

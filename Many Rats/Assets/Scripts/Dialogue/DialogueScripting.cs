@@ -28,6 +28,10 @@ public class DialogueScripting : MonoBehaviour
 
     void Start()
     {
+        EventManagerZeroArgs<TriggerDialogue1Event>.GetInstance().AddListener(PlayDialogue1);
+        EventManagerZeroArgs<TriggerDialogue2Event>.GetInstance().AddListener(PlayDialogue2);
+        EventManagerZeroArgs<TriggerDialogue3Event>.GetInstance().AddListener(PlayDialogue3);
+        EventManagerZeroArgs<TriggerDialogue4Event>.GetInstance().AddListener(PlayDialogue4);
         activeDialogue = false;
         PlayDialogue1();
     }
@@ -36,7 +40,7 @@ public class DialogueScripting : MonoBehaviour
     {
         if (activeDialogue)
         {
-            if (Input.GetButtonDown("Jump"))
+            if (Input.anyKeyDown)
             {
                 if (currentDialoguePlaying == 2 && currentDialogueLine == 6 || currentDialoguePlaying == 3 && currentDialogueLine == 6)
                 {

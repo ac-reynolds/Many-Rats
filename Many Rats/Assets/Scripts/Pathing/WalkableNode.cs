@@ -12,7 +12,7 @@ public class WalkableNode : MonoBehaviour
 {
     public List<WalkableNode> neighbors;
     private List<float> _nodeDistances;//distances in same order as neighbors
-
+    
     //for easier editing
     private void OnDrawGizmos() {
         foreach (WalkableNode n in neighbors) {
@@ -89,9 +89,10 @@ public class WalkableNode : MonoBehaviour
                 //Debug.Log(reversePathNode.name);
                 reversePathNode = visitedNodes[reversePathNode].Item2;
             }
-            path.Add(this);
-            path.Reverse();
-        }
+        } 
+
+        path.Add(this);
+        path.Reverse();
 
         return path; 
     }

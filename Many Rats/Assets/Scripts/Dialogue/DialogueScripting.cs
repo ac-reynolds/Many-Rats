@@ -299,7 +299,7 @@ public class DialogueScripting : MonoBehaviour
                 dialogue1Text.text = DialogueText.DialogueCheese_1;
                 break;
             case 3:
-                StartCoroutine(AnimateText1(DialogueText.DialogueCheese_1));
+                StartCoroutine(AnimateText1(DialogueText.DialogueCheese_2));
                 break;
             case 4:
                 SkipTextAnimation();

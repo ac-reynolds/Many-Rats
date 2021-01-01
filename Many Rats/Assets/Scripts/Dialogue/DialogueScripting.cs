@@ -49,7 +49,7 @@ public class DialogueScripting : MonoBehaviour
                 else
                 {
                     currentDialogueLine++;
-                    Debug.Log(currentDialogueLine);
+                    //Debug.Log(currentDialogueLine);
                     switch (currentDialoguePlaying)
                     {
                         case 1:
@@ -95,7 +95,7 @@ public class DialogueScripting : MonoBehaviour
         {
             currentDialogueLine = 1;
         }
-
+/*
         if(Input.GetKeyDown(KeyCode.O))
         {
             PlayDialogue2();
@@ -110,6 +110,7 @@ public class DialogueScripting : MonoBehaviour
         {
             PlayDialogue4();
         }
+        */
     }
 
     IEnumerator AnimateText1(string currentDisplayText)

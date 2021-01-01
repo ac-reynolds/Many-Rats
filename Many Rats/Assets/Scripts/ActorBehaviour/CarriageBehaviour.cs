@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class CarriageBehaviour : MonoBehaviour
 {
+    public UnityEvent onPersonDespawn;
+
     private void Start() {
         EventManagerOneArg<SpawnCarriageEvent, GameObject>.GetInstance().InvokeEvent(gameObject);
     }
@@ -14,6 +17,7 @@ public class CarriageBehaviour : MonoBehaviour
 
     private void AcceptPassenger(GameObject person) {
         EventManagerZeroArgs<CarriageLoadingSuccessfulEvent>.GetInstance().InvokeEvent();
+        onPersonDespawn.Invoke();
         person.GetComponent<PersonBehaviour>().Die();
     }
 

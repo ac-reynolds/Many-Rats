@@ -49,7 +49,6 @@ public class DialogueScripting : MonoBehaviour
                 else
                 {
                     currentDialogueLine++;
-                    Debug.Log(currentDialogueLine);
                     switch (currentDialoguePlaying)
                     {
                         case 1:

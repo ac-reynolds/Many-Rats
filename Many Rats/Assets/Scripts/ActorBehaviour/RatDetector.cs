@@ -10,9 +10,25 @@ public class RatDetector : MonoBehaviour
 
     private void Start()
     {
+        _sqTriggerDistance = Mathf.Pow(GetComponent<CircleCollider2D>().radius, 2);
+
         _nearbyRats = new List<GameObject>();
         _nearbyRatHordes = new List<GameObject>();
-        _sqTriggerDistance = Mathf.Pow(GetComponent<CircleCollider2D>().radius, 2);
+
+        GameObject[] activeRats = GameObject.FindGameObjectsWithTag("Rat");
+        GameObject[] activeRatHordes = GameObject.FindGameObjectsWithTag("RatHorde");
+
+        foreach (GameObject rat in activeRats) {
+            if (Vector2.SqrMagnitude(transform.position - rat.transform.position) < _sqTriggerDistance) {
+                _nearbyRats.Add(rat);
+            }
+        }
+        foreach (GameObject ratHorde in activeRatHordes) {
+            if(Vector2.SqrMagnitude(transform.position - ratHorde.transform.position) < _sqTriggerDistance) {
+                _nearbyRatHordes.Add(ratHorde);
+            }
+        } 
+
         EventManagerOneArg<SpawnRatEvent, GameObject>.GetInstance().AddListener(OnRatSpawn);
         EventManagerOneArg<SpawnRatHordeEvent, GameObject>.GetInstance().AddListener(OnRatHordeSpawn);
         EventManagerOneArg<DespawnRatEvent, GameObject>.GetInstance().AddListener(OnRatDespawn);
@@ -24,25 +40,32 @@ public class RatDetector : MonoBehaviour
     public Vector2 RunningFromRatsDirection() {
         Vector2 fleeDirection = new Vector2();
         foreach (GameObject rat in _nearbyRats) {
-            Vector2 ratToObject = (Vector2)(transform.position - rat.transform.position);
-            fleeDirection += ratToObject.normalized * (_sqTriggerDistance - Vector2.SqrMagnitude(ratToObject));
+            if (rat != null) {
+                Vector2 ratToObject = (Vector2)(transform.position - rat.transform.position);
+                fleeDirection += ratToObject.normalized * (_sqTriggerDistance - Vector2.SqrMagnitude(ratToObject));
+            }
         }
         foreach (GameObject horde in _nearbyRatHordes) {
-            Vector2 hordeToObject = (Vector2)(transform.position - horde.transform.position);
-            fleeDirection += hordeToObject.normalized * (_sqTriggerDistance - Vector2.SqrMagnitude(hordeToObject));
+            if(horde != null) {
+                Vector2 hordeToObject = (Vector2)(transform.position - horde.transform.position);
+                fleeDirection += hordeToObject.normalized * (_sqTriggerDistance - Vector2.SqrMagnitude(hordeToObject));
+            }
         }
         return fleeDirection.normalized;
     }
 
     private void OnRatDespawn(GameObject rat) {
         if (Vector3.SqrMagnitude(rat.transform.position - transform.position) < _sqTriggerDistance) {
-            _nearbyRats.Remove(rat);
+            if(!_nearbyRats.Remove(rat)) {
+                Debug.Log("Could not remove rat!");
+            }
         }
     }
 
     private void OnRatSpawn(GameObject rat) {
         if (Vector3.SqrMagnitude(rat.transform.position - transform.position) < _sqTriggerDistance) {
             _nearbyRats.Add(rat);
+            Debug.Log("new rat inr ange ! now there are " + _nearbyRats.Count + "rats");
         } 
     }
 
@@ -76,10 +99,14 @@ public class RatDetector : MonoBehaviour
     {
         if (other.CompareTag("Rat"))
         {
-            _nearbyRats.Remove(other.gameObject);
+            if (!_nearbyRats.Remove(other.gameObject)) {
+                Debug.Log("Rat left trigger radius, but could not remove rat!");
+            }
         }
         else if (other.CompareTag("RatHorde")) {
-            _nearbyRatHordes.Remove(other.gameObject);
+            if(!_nearbyRatHordes.Remove(other.gameObject)) {
+                Debug.Log("Rat horde left trigger radius, but could not remove rat horde!");
+            }
         }
     }
 

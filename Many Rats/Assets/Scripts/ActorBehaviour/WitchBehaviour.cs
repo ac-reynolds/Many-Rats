@@ -6,20 +6,24 @@ using UnityEngine.EventSystems;
 
 public class WitchBehaviour : MonoBehaviour
 {
-    public float CastDelay = 1; //amount of time after spawning until the witch casts
+    [SerializeField] private float CastDelay = 1; //amount of time after spawning until the witch casts
+    [SerializeField] private float _timeUntilDespawn = 20;
 
-    public WalkableNode NodeLocation;
     private float _castTime;
     private bool _casting;
+    private float _despawnTime;
+
+    public WalkableNode NodeLocation
+    {
+        get; set;
+    }
 
     void Start()
     {
+        EventManagerOneArg<SpawnWitchEvent, GameObject>.GetInstance().InvokeEvent(gameObject);
         _castTime = Time.time + CastDelay;
         _casting = false;
-    }
-
-    public void SetNode(WalkableNode node) {
-        NodeLocation = node;
+        _despawnTime = Time.time + _timeUntilDespawn;
     }
 
     public bool IsCasting() {
@@ -29,13 +33,17 @@ public class WitchBehaviour : MonoBehaviour
     private void Update() {
         if (!_casting && _castTime < Time.time) {
             _casting = true;
-            EventManager.GetInstance().InvokeCharmEvent(NodeLocation);
+        }
+
+        if (_despawnTime < Time.time) {
+            Die();
         }
 
     }
 
     public void Die() {
-        EventManager.GetInstance().InvokeWitchDespawnEvent();
+        EventManagerOneArg<DespawnWitchEvent, GameObject>.GetInstance().InvokeEvent(gameObject);
+        Debug.Log("witch die");
         Destroy(gameObject);
     }
     private void Consume(GameObject person) {

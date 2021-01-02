@@ -8,19 +8,27 @@ public class InputHandler : MonoBehaviour
     public Camera Camera;
     private bool _hasLearnedSummonRat = false;
     private bool _hasLearnedDispelHorde = false;
+    private bool _mayClickOnce = false;
 
     private void Start() {
         EventManagerZeroArgs<TriggerDialogue2Event>.GetInstance().AddListener(AfterDialogue2);
+        EventManagerZeroArgs<AllowSingleRatSpawnEvent>.GetInstance().AddListener(AllowOneRatSpawn);
     }
 
     private void AfterDialogue2() {
         _hasLearnedSummonRat = true;
     }
 
+    private void AllowOneRatSpawn() {
+        _mayClickOnce = true;
+    }
+
     void Update()
     {
         //if user clicks on game field, a rat will spawn at cursor location
-        if (Time.timeScale > 0 && Input.GetKeyDown(KeyCode.Mouse0) && _hasLearnedSummonRat) {
+        if (_mayClickOnce || Time.timeScale > 0 && Input.GetKeyDown(KeyCode.Mouse0)) {
+
+            _mayClickOnce = false;
 
             Ray cameraRay = Camera.ScreenPointToRay(Input.mousePosition);
             Vector3 cameraRayOrigin = cameraRay.origin;

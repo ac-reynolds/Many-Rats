@@ -251,6 +251,7 @@ public class DialogueScripting : MonoBehaviour
             case 5:
                 tutorialPromptGroup.SetActive(true);
                 dialogue1Group.SetActive(false);
+                EventManagerZeroArgs<AllowSingleRatSpawnEvent>.GetInstance().InvokeEvent();
                 StartCoroutine(AnimateText3(DialogueText.DialogueTutorial_3));
                 break;
             case 6:

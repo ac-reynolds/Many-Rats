@@ -25433,6 +25433,14 @@ PrefabInstance:
       propertyPath: CarriageSpawnLocationsParentObject
       value: 
       objectReference: {fileID: 1996949802}
+    - target: {fileID: 1886555595, guid: 26580e25710ce774d8c0ed35563714a9, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1886555595, guid: 26580e25710ce774d8c0ed35563714a9, type: 3}
+      propertyPath: AutoSpawningOn
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5828128933618875744, guid: 26580e25710ce774d8c0ed35563714a9, type: 3}
       propertyPath: Camera
       value: 
@@ -29957,9 +29965,9 @@ Transform:
   - {fileID: 1927550898}
   - {fileID: 1352758175}
   - {fileID: 899956737}
-  - {fileID: 1818350555}
   - {fileID: 384500030}
   - {fileID: 1489002018}
+  - {fileID: 659447823}
   - {fileID: 1429564286}
   - {fileID: 18913570}
   - {fileID: 554435510}
@@ -29983,7 +29991,7 @@ Transform:
   - {fileID: 749252871}
   - {fileID: 1801349595}
   - {fileID: 460450015}
-  - {fileID: 659447823}
+  - {fileID: 1818350555}
   - {fileID: 2075121586}
   - {fileID: 218565295}
   - {fileID: 1029604729}

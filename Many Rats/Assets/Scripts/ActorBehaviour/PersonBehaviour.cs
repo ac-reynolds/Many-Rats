@@ -5,11 +5,10 @@ using UnityEngine.Events;
 
 public class PersonBehaviour : MonoBehaviour
 {
-    [SerializeField] private float _ratCheckRadius = 2;
     [SerializeField] private float _walkingSpeed = 1.0f;
     [SerializeField] private float _runningSpeed = 2.5f;
     [SerializeField] private float _waypointTagSqrDistance = .5f;
-    [SerializeField] private float _fearDuration = 3.0f;
+    [SerializeField] private float _fearDuration = 1.0f;
 
     private RatDetector _ratDetector;
     private float _movementSpeed;
@@ -36,7 +35,6 @@ public class PersonBehaviour : MonoBehaviour
         _allNodes = GameObject.FindGameObjectsWithTag("Waypoint");
         _movementSpeed = _walkingSpeed;
         _ratDetector = GetComponentInChildren<RatDetector>();
-        _ratDetector.GetComponent<CircleCollider2D>().radius = _ratCheckRadius;
     }
 
 
@@ -44,6 +42,7 @@ public class PersonBehaviour : MonoBehaviour
     //time out and move to the nearest waypoint.
     void Update() {
 
+        /* //for debugging
         if(_isCharmed) {
             GetComponentInChildren<SpriteRenderer>().color = Color.red;
         } else if (Time.time < _fearTimeout) {
@@ -51,6 +50,7 @@ public class PersonBehaviour : MonoBehaviour
         } else {
             GetComponentInChildren<SpriteRenderer>().color = Color.green;
         }
+        */
 
         if (_isFeared && Time.time < _fearTimeout) {//currently feared
 
@@ -66,6 +66,7 @@ public class PersonBehaviour : MonoBehaviour
                 _movementSpeed = _runningSpeed;
             } else {//no rats, past or present
                 _isFeared = false;
+                _movementSpeed = _walkingSpeed;
                 if (_isCharmed) {
                     _direction = GetDirectionAlongPath();
                 } else {
@@ -96,7 +97,6 @@ public class PersonBehaviour : MonoBehaviour
      * First finds the closest witch.  Then finds the closest node, and paths from that node to the witch
      */
     private void TryToFixate() {
-        Debug.Log("trying to fixate");
         //find closest witch
         GameObject[] witches = GameObject.FindGameObjectsWithTag("Witch");
         float minWitchDistance = float.MaxValue;
@@ -117,8 +117,6 @@ public class PersonBehaviour : MonoBehaviour
                 }
             }
         }
-
-        Debug.Log("trying to fixate on closestwitch" + closestWitch);
 
         if (closestWitch != null) {
             _charmSource = closestWitch.GetComponent<WitchBehaviour>().NodeLocation;

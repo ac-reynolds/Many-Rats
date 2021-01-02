@@ -26,3 +26,6 @@ public class TriggerDialogue1Event : UnityEvent { }
 public class TriggerDialogue2Event : UnityEvent { }
 public class TriggerDialogue3Event : UnityEvent { }
 public class TriggerDialogue4Event : UnityEvent { }
+
+//for tutorial
+public class AllowSingleRatSpawnEvent : UnityEvent { }

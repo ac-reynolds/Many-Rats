@@ -47,7 +47,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 20
+  m_Radius: 3
 --- !u!114 &6061668745100052556
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -144,11 +144,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8056c4f77b455a04db4c0652c69269b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ratCheckRadius: 5
   _walkingSpeed: 1
   _runningSpeed: 2.5
   _waypointTagSqrDistance: 0.1
-  _fearDuration: 3
+  _fearDuration: 1
 --- !u!1 &7916958217403791429
 GameObject:
   m_ObjectHideFlags: 0

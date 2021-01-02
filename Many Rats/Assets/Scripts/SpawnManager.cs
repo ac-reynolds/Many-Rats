@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
+    public bool AutoSpawningOn = true;
     public GameObject CarriagePrefab;
     public GameObject PersonPrefab;
     public GameObject RatPrefab;
@@ -44,17 +45,17 @@ public class SpawnManager : MonoBehaviour
 
     void Update()
     {
-        if (Time.time > _nextPersonSpawnTime) {
+        if (Time.time > _nextPersonSpawnTime && AutoSpawningOn) {
             SpawnPerson();
             _nextPersonSpawnTime += Random.Range(0.0f, MaxPersonSpawnTime);
         }
 
-        if (Time.time > _nextWitchSpawnTime) {
+        if (Time.time > _nextWitchSpawnTime && AutoSpawningOn) {
             SpawnWitch();
             _nextWitchSpawnTime += WitchSpawnTime;
         }
 
-        if (Time.time > _nextCarriageSpawnTime) {
+        if (Time.time > _nextCarriageSpawnTime && AutoSpawningOn) {
             SpawnCarriage();
             _nextCarriageSpawnTime += CarriageSpawnTime;
         }

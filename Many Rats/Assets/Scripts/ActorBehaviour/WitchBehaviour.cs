@@ -13,6 +13,8 @@ public class WitchBehaviour : MonoBehaviour
     private bool _casting;
     private float _despawnTime;
 
+    public UnityEvent killPerson;
+
     public WalkableNode NodeLocation
     {
         get; set;
@@ -47,6 +49,7 @@ public class WitchBehaviour : MonoBehaviour
         Destroy(gameObject);
     }
     private void Consume(GameObject person) {
+        killPerson.Invoke();
         person.GetComponent<PersonBehaviour>().Die();
     }
 

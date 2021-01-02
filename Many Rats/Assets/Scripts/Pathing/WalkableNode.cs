@@ -15,16 +15,12 @@ public class WalkableNode : MonoBehaviour
     
     //for easier editing
     private void OnDrawGizmos() {
-
-        GUIStyle style = new GUIStyle();
-        style.fontSize = 20;
         foreach (WalkableNode n in neighbors) {
-            if(n == null) {
-                Handles.Label(transform.position, "Null node reference", style);
-            }
             Gizmos.DrawLine(transform.position, n.transform.position);
         }
-        //Handles.Label(transform.position, name, style);
+        GUIStyle style = new GUIStyle();
+        style.fontSize = 20;
+        Handles.Label(transform.position, name, style);
     }
 
     void Awake () {

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class RatHordeBehaviour : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class RatHordeBehaviour : MonoBehaviour
     [SerializeField] private float _runSpeed = 2.0f;
     [SerializeField] private float _waypointTagSqrDistance = .1f;
     [SerializeField] private float _chaseTimeout = 5;//if it hasn't found target for this long, it'll reset its behavior
+
+    public UnityEvent killPerson;
 
     private enum HordeState
     {
@@ -123,6 +126,7 @@ public class RatHordeBehaviour : MonoBehaviour
     }
 
     public void Kill(PersonBehaviour person) {
+        killPerson.Invoke();
         person.Die();
     }
 

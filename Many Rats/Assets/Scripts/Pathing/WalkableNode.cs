@@ -20,7 +20,7 @@ public class WalkableNode : MonoBehaviour
         }
         GUIStyle style = new GUIStyle();
         style.fontSize = 20;
-        Handles.Label(transform.position, name, style);
+        //Handles.Label(transform.position, name, style);
     }
 
     void Awake () {

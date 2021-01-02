@@ -47,17 +47,17 @@ public class SpawnManager : MonoBehaviour
 
     void Update()
     {
-        if (Time.time > _nextPersonSpawnTime) {
+        if (Time.timeSinceLevelLoad > _nextPersonSpawnTime) {
             SpawnPerson();
             _nextPersonSpawnTime += Random.Range(0.0f, MaxPersonSpawnTime);
         }
 
-        if (Time.time > _nextWitchSpawnTime) {
+        if (Time.timeSinceLevelLoad > _nextWitchSpawnTime) {
             SpawnWitch();
             _nextWitchSpawnTime += WitchSpawnTime;
         }
 
-        if (Time.time > _nextCarriageSpawnTime) {
+        if (Time.timeSinceLevelLoad > _nextCarriageSpawnTime) {
             SpawnCarriage();
             _nextCarriageSpawnTime += CarriageSpawnTime;
         }

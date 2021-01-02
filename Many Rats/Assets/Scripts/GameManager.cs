@@ -26,7 +26,9 @@ public class GameManager : MonoBehaviour
         EventManagerOneArg<SpawnWitchEvent, GameObject>.GetInstance().AddListener(OnWitchSpawn);
         EventManagerOneArg<SpawnPersonEvent, GameObject>.GetInstance().AddListener(OnPersonSpawn);
         EventManagerZeroArgs<CarriageLoadingSuccessfulEvent>.GetInstance().AddListener(OnCarriageLoad);
-
+        lives = 3;
+        score = 0;
+        cheeseAvailable = 0;
     }
 
     private void OnCarriageLoad() {
@@ -76,6 +78,11 @@ public class GameManager : MonoBehaviour
     public void LoseLives()
     {
         lives--;
+    }
+
+    public void ResetGame()
+    {
+
     }
 
 }

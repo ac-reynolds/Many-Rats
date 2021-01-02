@@ -22,12 +22,15 @@ public class PersonBehaviour : MonoBehaviour
     private int _nextNodeOnPath;
     private Vector2 _direction;
 
+    private Animator anim;
+
 
     void Start()
     {
         EventManagerOneArg<SpawnPersonEvent, GameObject>.GetInstance().InvokeEvent(gameObject);
         EventManagerOneArg<SpawnWitchEvent, GameObject>.GetInstance().AddListener(OnCharm);
         EventManagerOneArg<DespawnWitchEvent, GameObject>.GetInstance().AddListener(OnWitchDespawn);
+        anim = GetComponent<Animator>();
         _allNodes = GameObject.FindGameObjectsWithTag("Waypoint");
         _movementSpeed = _walkingSpeed;
         _ratDetector = GetComponentInChildren<RatDetector>();
@@ -42,6 +45,7 @@ public class PersonBehaviour : MonoBehaviour
             //if nearby rats, become afraid
             if (_ratDetector.NumNearbyRats() > 0) {
                 _isFeared = true;
+                anim.SetBool("isFeared", true);
                 _movementSpeed = _runningSpeed;
                 _direction = _ratDetector.RunningFromRatsDirection();
                 _fearTimeout = Time.time + _fearDuration;
@@ -50,6 +54,7 @@ public class PersonBehaviour : MonoBehaviour
                 //clear fear if there are no more rats
                 if (_isFeared) {
                     _isFeared = false;
+                    anim.SetBool("isFeared", false);
                     TryToFixate();
                 }
                 _movementSpeed = _walkingSpeed;
